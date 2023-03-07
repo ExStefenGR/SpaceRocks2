@@ -1,19 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Net.NetworkInformation;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.Audio;
 
 public class Player : MonoBehaviour
 {
-    private float speed = 5.0f;
     private Vector2 movement = Vector2.zero;
     private float moveX = 0.0f;
     private float moveY = 0.0f;
     private Rigidbody2D rb;
     private Animator anim;
-    private bool isPaused = false;
+    public bool isPaused = false;
+    [SerializeField] private float speed = 5.0f;
     [SerializeField] private BulletBehavior BulletPrefab;
     [SerializeField] private Transform LaunchOffset;
     [SerializeField] private AudioSource bulletAudio;
@@ -30,6 +25,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Animate();
         if (!isPaused)
         {
             ProcessInput();
@@ -39,17 +35,17 @@ public class Player : MonoBehaviour
     {
         moveX = Input.GetAxisRaw("Horizontal");
         moveY = Input.GetAxisRaw("Vertical");
-        if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Joystick1Button0))
+
+        if (Input.GetKeyDown(KeyCode.E))
         {
+            Instantiate(BulletPrefab, LaunchOffset.position, LaunchOffset.rotation);
             bulletAudio.PlayOneShot(bulletClip);
-            Instantiate(BulletPrefab, LaunchOffset.position, transform.rotation);
         }
     }
 
     private void FixedUpdate()
     {
         Move();
-        Animate();
     }
 
     private void Move()

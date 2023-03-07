@@ -3,16 +3,17 @@ using UnityEngine;
 public class CameraMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
-    [SerializeField] private float velocity;
+    private float moveX = 1;
+    [SerializeField] private float speed;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
-
-    // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
-        transform.position = transform.position + new Vector3(1.0f * velocity * Time.deltaTime, 0.0f,0.0f);
+
+        rb.velocity = new Vector2(moveX * speed, 0.0f);
     }
 }
