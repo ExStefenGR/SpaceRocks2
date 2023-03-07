@@ -4,8 +4,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     private Vector2 movement = Vector2.zero;
-    private float moveX = 0.0f;
-    private float moveY = 0.0f;
+    private Vector2 move = Vector2.zero;
     private Rigidbody2D rb;
     private Animator anim;
     public bool isPaused = false;
@@ -18,10 +17,11 @@ public class Enemy : MonoBehaviour
     [SerializeField] private int hp = 1;
     [SerializeField] private int waitForFire;
     [SerializeField] private bool fire = false;
-    [SerializeField] GameObject target;
-    EnemyState randomState;
+    [SerializeField] private GameObject target;
+    private EnemyState randomState;
+
     //enum for states
-    enum EnemyState
+    private enum EnemyState
     {
         MoveInLine,
         Follow,
@@ -30,18 +30,17 @@ public class Enemy : MonoBehaviour
     };
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         randomState = (EnemyState)Random.Range(0, 3); //Gets a random state once
         gameObject.layer = LayerMask.NameToLayer("Enemy");
         target = GameObject.Find("Player");
-
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (!isPaused)
         {
@@ -57,24 +56,24 @@ public class Enemy : MonoBehaviour
     {
         if (randomState == EnemyState.MoveInLine)
         {
-            moveX = -1.0f;
+            move.x = -1.0f;
         }
         else if (randomState == EnemyState.Follow)
         {
-            moveX = target.transform.position.x;
-            moveY = target.transform.position.y;
+            move.x = target.transform.position.x;
+            move.y = target.transform.position.y;
         }
         else if (randomState == EnemyState.FireInLine)
         {
-            moveX = -1.0f;
+            move.x = -1.0f;
             if (Random.Range(0, 100) >= 70 & !fire)
             {
-                StartCoroutine(Shoot());
+                _ = StartCoroutine(Shoot());
             }
         }
         else
         {
-            moveX = -1.0f;
+            move.x = -1.0f;
         }
 
     }
@@ -87,7 +86,7 @@ public class Enemy : MonoBehaviour
 
     private void Move()
     {
-        movement = new Vector2(moveX, moveY).normalized;
+        movement = new Vector2(move.x, move.y).normalized;
         rb.velocity = new Vector2(movement.x * speed, movement.y * speed);
     }
     private void Animate()
@@ -97,23 +96,23 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "bullet")
+        if (collision.CompareTag("bullet"))
         {
             hp--;
         }
-        if (collision.tag == "Enemy")
+        if (collision.CompareTag("Enemy"))
         {
             Destroy(gameObject);
         }
-        if (collision.tag == "Player")
+        if (collision.CompareTag("Player"))
         {
             Destroy(gameObject);
         }
-        if (collision.tag == "EnemyBarrier")
+        if (collision.CompareTag("EnemyBarrier"))
         {
             Destroy(gameObject);
         }
-        if (collision.tag == "Enemybullet")
+        if (collision.CompareTag("Enemybullet"))
         {
             Destroy(gameObject);
         }
@@ -145,7 +144,7 @@ public class Enemy : MonoBehaviour
     private IEnumerator Shoot()
     {
         fire = true;
-        Instantiate(BulletPrefab, LaunchOffset.position, LaunchOffset.rotation);
+        _ = Instantiate(BulletPrefab, LaunchOffset.position, LaunchOffset.rotation);
         bulletAudio.PlayOneShot(bulletClip);
         yield return new WaitForSeconds(waitForFire);
         yield return fire = false;

@@ -8,12 +8,13 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] private bool finishedSpawning = false;
     [SerializeField] private Enemy prefabEnemy;
     [SerializeField] private Transform offset;
+
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (!finishedSpawning)
         {
-            StartCoroutine(SpawnEnemies());
+            _ = StartCoroutine(SpawnEnemies());
         }
     }
 
@@ -24,7 +25,7 @@ public class EnemySpawn : MonoBehaviour
         {
             for (int i = 0; i < enemiesLimit; i++)
             {
-                Instantiate(prefabEnemy, offset.position, offset.rotation);
+                _ = Instantiate(prefabEnemy, offset.position, offset.rotation);
                 yield return new WaitForSeconds(spawnCooldown);
             }
         }

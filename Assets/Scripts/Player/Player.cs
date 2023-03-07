@@ -3,8 +3,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private Vector2 movement = Vector2.zero;
-    private float moveX = 0.0f;
-    private float moveY = 0.0f;
+    private Vector2 move = Vector2.zero;
     private Rigidbody2D rb;
     private Animator anim;
     public bool isPaused = false;
@@ -16,14 +15,14 @@ public class Player : MonoBehaviour
     public IInteractable Interactable { get; set; }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         Animate();
         if (!isPaused)
@@ -33,12 +32,12 @@ public class Player : MonoBehaviour
     }
     private void ProcessInput()
     {
-        moveX = Input.GetAxisRaw("Horizontal");
-        moveY = Input.GetAxisRaw("Vertical");
+        move.x = Input.GetAxisRaw("Horizontal");
+        move.y = Input.GetAxisRaw("Vertical");
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Instantiate(BulletPrefab, LaunchOffset.position, LaunchOffset.rotation);
+            _ = Instantiate(BulletPrefab, LaunchOffset.position, LaunchOffset.rotation);
             bulletAudio.PlayOneShot(bulletClip);
         }
     }
@@ -50,7 +49,7 @@ public class Player : MonoBehaviour
 
     private void Move()
     {
-        movement = new Vector2(moveX, moveY).normalized;
+        movement = new Vector2(move.x, move.y).normalized;
         rb.velocity = new Vector2(movement.x * speed, movement.y * speed);
     }
     private void Animate()
