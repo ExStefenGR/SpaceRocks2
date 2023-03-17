@@ -2,58 +2,78 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private Vector2 movement = Vector2.zero;
-    private Vector2 move = Vector2.zero;
-    private Rigidbody2D rb;
-    private Animator anim;
-    public bool isPaused = false;
-    [SerializeField] private float speed = 5.0f;
-    [SerializeField] private BulletBehavior BulletPrefab;
-    [SerializeField] private Transform LaunchOffset;
-    [SerializeField] private AudioSource bulletAudio;
-    [SerializeField] private AudioClip bulletClip;
+    [SerializeField] private float movementSpeed = 5.0f;
+    [SerializeField] private BulletBehavior bulletPrefab;
+    [SerializeField] private Transform bulletLaunchOffset;
+    [SerializeField] private AudioSource bulletAudioSource;
+    [SerializeField] private AudioClip bulletAudioClip;
+
+    private Vector2 currentMovement;
+    private Vector2 moveInput;
+    private Rigidbody2D rigidBody;
+    private Animator animator;
+
+    private bool _isPaused;
+    public bool IsPaused
+    {
+        get => _isPaused;
+        set => _isPaused = value;
+    }
+
     public IInteractable Interactable { get; set; }
 
     // Start is called before the first frame update
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
+        rigidBody = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        Animate();
-        if (!isPaused)
+        if (!IsPaused)
         {
-            ProcessInput();
+            ProcessShootingInput();
+            ProcessMovementInput();
         }
+        UpdateAnimation();
     }
-    private void ProcessInput()
+
+    // Process player input
+    private void ProcessMovementInput()
     {
-        move.x = Input.GetAxisRaw("Horizontal");
-        move.y = Input.GetAxisRaw("Vertical");
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            _ = Instantiate(BulletPrefab, LaunchOffset.position, LaunchOffset.rotation);
-            bulletAudio.PlayOneShot(bulletClip);
-        }
+        moveInput.x = Input.GetAxisRaw("Horizontal");
+        moveInput.y = Input.GetAxisRaw("Vertical");
     }
 
+    // FixedUpdate is called at fixed intervals
     private void FixedUpdate()
     {
-        Move();
+        MovePlayer();
     }
 
-    private void Move()
+    // Move the player based on input
+    private void MovePlayer()
     {
-        movement = new Vector2(move.x, move.y).normalized;
-        rb.velocity = new Vector2(movement.x * speed, movement.y * speed);
+        currentMovement = moveInput.normalized;
+        rigidBody.velocity = currentMovement * movementSpeed;
     }
-    private void Animate()
+
+    // Update animation parameters
+    private void UpdateAnimation()
     {
-        anim.SetFloat("direction", movement.y);
+        animator.SetFloat("direction", currentMovement.y);
+    }
+    private void ProcessShootingInput()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            BulletBehavior bullet = BulletPool.Instance.GetBullet();
+            bullet.transform.position = bulletLaunchOffset.position;
+            bullet.transform.rotation = bulletLaunchOffset.rotation;
+            bullet.gameObject.SetActive(true);
+            bulletAudioSource.PlayOneShot(bulletAudioClip);
+        }
     }
 }

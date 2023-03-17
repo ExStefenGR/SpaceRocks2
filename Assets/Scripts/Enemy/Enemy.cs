@@ -4,23 +4,22 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     private Vector2 movement = Vector2.zero;
-    private Vector2 move = Vector2.zero;
     private Rigidbody2D rb;
     private Animator anim;
     public bool isPaused = false;
     [SerializeField] private float speed = 5.0f;
-    [SerializeField] private EnemyBullet BulletPrefab;
-    [SerializeField] private Transform LaunchOffset;
+    [SerializeField] private EnemyBullet bulletPrefab;
+    [SerializeField] private Transform launchOffset;
     [SerializeField] private AudioSource bulletAudio;
     [SerializeField] private AudioClip bulletClip;
-    //Enemy Parameters
+    // Enemy Parameters
     [SerializeField] private int hp = 1;
-    [SerializeField] private int waitForFire;
-    [SerializeField] private bool fire = false;
+    [SerializeField] private float fireRate = 1f;
     [SerializeField] private GameObject target;
     private EnemyState randomState;
+    private Transform targetTransform;
 
-    //enum for states
+    // Enum for states
     private enum EnemyState
     {
         MoveInLine,
@@ -34,61 +33,56 @@ public class Enemy : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        randomState = (EnemyState)Random.Range(0, 3); //Gets a random state once
+        randomState = (EnemyState)Random.Range(0, 4);
         gameObject.layer = LayerMask.NameToLayer("Enemy");
         target = GameObject.Find("Player");
+        targetTransform = target.transform;
+
+        if (randomState == EnemyState.FireInLine || randomState == EnemyState.FireFollow)
+        {
+            InvokeRepeating("Shoot", 0, fireRate);
+        }
     }
 
-    // Update is called once per frame
-    private void Update()
+    // FixedUpdate is called once per physics frame
+    private void FixedUpdate()
     {
         if (!isPaused)
         {
             ProcessInput();
-        }
-        if (hp <= 0)
-        {
-            Destroy(gameObject);
+            Move();
+            Animate();
         }
     }
-    //Behaviour here
+
+    // Behaviour here
     private void ProcessInput()
     {
-        if (randomState == EnemyState.MoveInLine)
+        switch (randomState)
         {
-            move.x = -1.0f;
+            case EnemyState.MoveInLine:
+                movement.x = -1.0f;
+                movement.y = 0.0f;
+                break;
+            case EnemyState.Follow:
+                movement = Vector2.MoveTowards(transform.position, targetTransform.position, speed * Time.fixedDeltaTime) - (Vector2)transform.position;
+                break;
+            case EnemyState.FireInLine:
+                movement.x = -1.0f;
+                movement.y = 0.0f;
+                break;
+            default:
+                movement.x = -1.0f;
+                movement.y = 0.0f;
+                break;
         }
-        else if (randomState == EnemyState.Follow)
-        {
-            move.x = target.transform.position.x;
-            move.y = target.transform.position.y;
-        }
-        else if (randomState == EnemyState.FireInLine)
-        {
-            move.x = -1.0f;
-            if (Random.Range(0, 100) >= 70 & !fire)
-            {
-                _ = StartCoroutine(Shoot());
-            }
-        }
-        else
-        {
-            move.x = -1.0f;
-        }
-
-    }
-
-    private void FixedUpdate()
-    {
-        Move();
-        Animate();
     }
 
     private void Move()
     {
-        movement = new Vector2(move.x, move.y).normalized;
         rb.velocity = new Vector2(movement.x * speed, movement.y * speed);
     }
+
     private void Animate()
     {
         anim.SetFloat("direction", movement.y);
@@ -96,57 +90,34 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("bullet"))
-        {
-            hp--;
-        }
-        if (collision.CompareTag("Enemy"))
-        {
-            Destroy(gameObject);
-        }
-        if (collision.CompareTag("Player"))
-        {
-            Destroy(gameObject);
-        }
-        if (collision.CompareTag("EnemyBarrier"))
-        {
-            Destroy(gameObject);
-        }
-        if (collision.CompareTag("Enemybullet"))
-        {
-            Destroy(gameObject);
-        }
+        HandleCollision(collision.gameObject);
     }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("bullet"))
+        Debug.Log("Enemy OnCollisionEnter2D with " + collision.gameObject.tag);
+        HandleCollision(collision.gameObject);
+    }
+
+    private void HandleCollision(GameObject other)
+    {
+        if (other.CompareTag("bullet"))
         {
-            Destroy(gameObject);
+            hp--;
+            if (hp <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
-        if (collision.gameObject.CompareTag("Enemybarrier"))
-        {
-            Destroy(gameObject);
-        }
-        if (collision.gameObject.CompareTag("Enemybullet"))
-        {
-            Destroy(gameObject);
-        }
-        if (collision.gameObject.CompareTag("Enemy"))
-        {
-            Destroy(gameObject);
-        }
-        if (collision.gameObject.CompareTag("Player"))
+        if (other.CompareTag("Enemybarrier"))
         {
             Destroy(gameObject);
         }
     }
 
-    private IEnumerator Shoot()
+    private void Shoot()
     {
-        fire = true;
-        _ = Instantiate(BulletPrefab, LaunchOffset.position, LaunchOffset.rotation);
+        Instantiate(bulletPrefab, launchOffset.position, launchOffset.rotation);
         bulletAudio.PlayOneShot(bulletClip);
-        yield return new WaitForSeconds(waitForFire);
-        yield return fire = false;
     }
 }

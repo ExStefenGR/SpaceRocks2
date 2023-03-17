@@ -5,30 +5,39 @@ public class EnemySpawn : MonoBehaviour
 {
     [SerializeField] private int enemiesLimit = 5;
     [SerializeField] private int spawnCooldown = 5;
-    [SerializeField] private bool finishedSpawning = false;
     [SerializeField] private Enemy prefabEnemy;
     [SerializeField] private Transform offset;
+    [SerializeField] private float minYOffset = -2.0f;
+    [SerializeField] private float maxYOffset = 2.0f;
 
-    // Update is called once per frame
-    private void FixedUpdate()
+    private bool isSpawning;
+
+    // Start is called before the first frame update
+    private void Start()
     {
-        if (!finishedSpawning)
-        {
-            _ = StartCoroutine(SpawnEnemies());
-        }
+        StartCoroutine(SpawnEnemies());
     }
 
     private IEnumerator SpawnEnemies()
     {
-        finishedSpawning = true;
-        if (finishedSpawning)
+        if (isSpawning) yield break;
+
+        isSpawning = true;
+
+        while (true)
         {
             for (int i = 0; i < enemiesLimit; i++)
             {
-                _ = Instantiate(prefabEnemy, offset.position, offset.rotation);
+                Vector3 spawnPosition = offset.position + new Vector3(0, Random.Range(minYOffset, maxYOffset), 0);
+                Instantiate(prefabEnemy, spawnPosition, offset.rotation);
                 yield return new WaitForSeconds(spawnCooldown);
             }
+
+            // You can add a break condition here if you want to stop spawning enemies at some point
+            // For example:
+            // if (someCondition) break;
         }
-        yield return finishedSpawning = false;
+
+        //isSpawning = false;
     }
 }

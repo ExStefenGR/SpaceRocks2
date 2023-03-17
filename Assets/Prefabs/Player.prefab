@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1998282745651793015}
   - component: {fileID: 5416858215219181031}
   - component: {fileID: 5416858215219181026}
+  - component: {fileID: 8371781042338188465}
   - component: {fileID: 5416858215219181027}
   - component: {fileID: 5416858215219181025}
   - component: {fileID: 5416858215219181024}
@@ -101,12 +102,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b53cda60891b71648be25fd5eaf9eaeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isPaused: 0
-  speed: 5
-  BulletPrefab: {fileID: 3279100647581276188, guid: ac52da913e37261439fd38192905f9b2, type: 3}
-  LaunchOffset: {fileID: 1998282745859926450}
-  bulletAudio: {fileID: 4217910436485744789}
-  bulletClip: {fileID: 8300000, guid: 34479cbb1225f214fa1485729df2b7db, type: 3}
+  movementSpeed: 5
+  bulletPrefab: {fileID: 3279100647581276188, guid: ac52da913e37261439fd38192905f9b2, type: 3}
+  bulletLaunchOffset: {fileID: 1998282745859926450}
+  bulletAudioSource: {fileID: 4217910436485744789}
+  bulletAudioClip: {fileID: 8300000, guid: 34479cbb1225f214fa1485729df2b7db, type: 3}
+--- !u!114 &8371781042338188465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1998282745651793035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73bc5635eba1201458b06bf6b1a4a89d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 3279100647581276188, guid: ac52da913e37261439fd38192905f9b2, type: 3}
+  initialPoolSize: 10
 --- !u!50 &5416858215219181027
 Rigidbody2D:
   serializedVersion: 4
