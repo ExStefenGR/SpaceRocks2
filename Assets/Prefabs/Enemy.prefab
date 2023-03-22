@@ -176,7 +176,7 @@ MonoBehaviour:
   bulletClip: {fileID: 8300000, guid: 0f8b7b9f284b7af42b6330e67a1b6c6f, type: 3}
   hp: 1
   fireRate: 4
-  followThreshold: 5.5
+  followThreshold: 6
 --- !u!1 &1998282745859926451
 GameObject:
   m_ObjectHideFlags: 0
