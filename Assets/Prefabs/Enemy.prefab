@@ -97,7 +97,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1998282745651793035}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -169,14 +169,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPaused: 0
-  speed: 7
+  speed: 8
   bulletPrefab: {fileID: 204663146939227046, guid: 9d74d4fe5c9268944830fcf81c92c86c, type: 3}
   launchOffset: {fileID: 1998282745859926450}
   bulletAudio: {fileID: 2956328234352488444}
   bulletClip: {fileID: 8300000, guid: 0f8b7b9f284b7af42b6330e67a1b6c6f, type: 3}
   hp: 1
-  fireRate: 2
-  target: {fileID: 1998282745651793035, guid: 7f11b5a4b9452cd43b6d95fdc9083986, type: 3}
+  fireRate: 4
+  followThreshold: 5.5
 --- !u!1 &1998282745859926451
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,10 +229,10 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
+  MinDistance: 0
+  MaxDistance: 0.56
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0

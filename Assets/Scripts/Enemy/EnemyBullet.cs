@@ -2,23 +2,27 @@ using UnityEngine;
 
 public class EnemyBullet : MonoBehaviour
 {
-    [SerializeField] float speed = 10f;
-    void Update()
+    [SerializeField] private float speed = 10f;
+    private Rigidbody2D rb;
+
+    private void Awake()
     {
-        transform.position += transform.up * Time.deltaTime * speed;
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnEnable()
     {
-        if (collision.gameObject.CompareTag("Enemybarrier"))
-        {
-            Destroy(gameObject);
-        }
-        if (collision.gameObject.CompareTag("barrier"))
-        {
-            Destroy(gameObject);
-        }
-        if (collision.gameObject.CompareTag("Enemy"))
+        rb.velocity = transform.up * speed;
+    }
+
+    private void OnDisable()
+    {
+        rb.velocity = Vector2.zero;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.gameObject.CompareTag("Enemybarrier") || collider.gameObject.CompareTag("Enemy"))
         {
             Destroy(gameObject);
         }

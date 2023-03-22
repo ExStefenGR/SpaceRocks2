@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1848903133315624343}
   - component: {fileID: 1848903133315624342}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EnemyController
   m_TagString: Enemybarrier
   m_Icon: {fileID: 0}
@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemiesLimit: 5
   spawnCooldown: 5
-  finishedSpawning: 0
   prefabEnemy: {fileID: 4684850950257166336, guid: f9181746abf8b614592b83f3a0f89465, type: 3}
   offset: {fileID: 1848903133315624343}
+  minYOffset: -2
+  maxYOffset: 2

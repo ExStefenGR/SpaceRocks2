@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BulletBehavior : MonoBehaviour
 {
-    [SerializeField] float speed = 10f;
+    [SerializeField] private float speed = 10f;
     private Rigidbody2D rb;
 
     private void Awake()

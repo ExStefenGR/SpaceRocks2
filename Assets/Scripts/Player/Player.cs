@@ -13,14 +13,37 @@ public class Player : MonoBehaviour
     private Rigidbody2D rigidBody;
     private Animator animator;
 
-    private bool _isPaused;
-    public bool IsPaused
+    public IInteractable Interactable { get; set; }
+
+    public enum PlayerState
     {
-        get => _isPaused;
-        set => _isPaused = value;
+        Normal,
+        Paused,
     }
 
-    public IInteractable Interactable { get; set; }
+    private PlayerState _currentState;
+
+    public PlayerState CurrentState
+    {
+        get => _currentState;
+        set
+        {
+            _currentState = value;
+            HandleStateChanged();
+        }
+    }
+    private void HandleStateChanged()
+    {
+        switch (CurrentState)
+        {
+            case PlayerState.Normal:
+                Time.timeScale = 1f;
+                break;
+            case PlayerState.Paused:
+                Time.timeScale = 0f;
+                break;
+        }
+    }
 
     // Start is called before the first frame update
     private void Start()
@@ -32,7 +55,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (!IsPaused)
+        if (CurrentState == PlayerState.Normal)
         {
             ProcessShootingInput();
             ProcessMovementInput();

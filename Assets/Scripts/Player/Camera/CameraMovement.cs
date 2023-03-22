@@ -3,11 +3,11 @@ using UnityEngine;
 public class CameraMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
-    private float moveX = 1;
+    private readonly float moveX = 1;
     [SerializeField] private float speed;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }

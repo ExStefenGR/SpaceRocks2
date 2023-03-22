@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -15,9 +14,11 @@ public class Enemy : MonoBehaviour
     // Enemy Parameters
     [SerializeField] private int hp = 1;
     [SerializeField] private float fireRate = 1f;
-    [SerializeField] private GameObject target;
-    private EnemyState randomState;
+    [SerializeField] private float followThreshold = 5.0f;
+    private GameObject target;
     private Transform targetTransform;
+    private EnemyState randomState;
+    private bool hasStoppedFollowing = false;
 
     // Enum for states
     private enum EnemyState
@@ -25,7 +26,8 @@ public class Enemy : MonoBehaviour
         MoveInLine,
         Follow,
         FireInLine,
-        FireFollow
+        FireFollow,
+        StopFollow
     };
 
     // Start is called before the first frame update
@@ -33,14 +35,14 @@ public class Enemy : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        randomState = (EnemyState)Random.Range(0, 4);
+        randomState = (EnemyState)Random.Range(0, 5); // Increase the range to include the new state
         gameObject.layer = LayerMask.NameToLayer("Enemy");
         target = GameObject.Find("Player");
         targetTransform = target.transform;
 
-        if (randomState == EnemyState.FireInLine || randomState == EnemyState.FireFollow)
+        if (randomState is EnemyState.FireInLine or EnemyState.FireFollow)
         {
-            InvokeRepeating("Shoot", 0, fireRate);
+            InvokeRepeating(nameof(Shoot), 0, fireRate);
         }
     }
 
@@ -61,26 +63,27 @@ public class Enemy : MonoBehaviour
         switch (randomState)
         {
             case EnemyState.MoveInLine:
-                movement.x = -1.0f;
-                movement.y = 0.0f;
+                MoveInLine();
                 break;
             case EnemyState.Follow:
-                movement = Vector2.MoveTowards(transform.position, targetTransform.position, speed * Time.fixedDeltaTime) - (Vector2)transform.position;
+                Follow();
                 break;
             case EnemyState.FireInLine:
-                movement.x = -1.0f;
-                movement.y = 0.0f;
+                FireInLine();
                 break;
-            default:
-                movement.x = -1.0f;
-                movement.y = 0.0f;
+            case EnemyState.FireFollow:
+                FireInLine(); // Since the current implementation is the same as FireInLine
+                break;
+            case EnemyState.StopFollow:
+                StopFollow();
                 break;
         }
     }
 
     private void Move()
     {
-        rb.velocity = new Vector2(movement.x * speed, movement.y * speed);
+        Vector2 targetVelocity = new(movement.x * speed, movement.y * speed);
+        rb.velocity = Vector2.Lerp(rb.velocity, targetVelocity, Time.fixedDeltaTime);
     }
 
     private void Animate()
@@ -117,7 +120,51 @@ public class Enemy : MonoBehaviour
 
     private void Shoot()
     {
-        Instantiate(bulletPrefab, launchOffset.position, launchOffset.rotation);
+        _ = Instantiate(bulletPrefab, launchOffset.position, launchOffset.rotation);
         bulletAudio.PlayOneShot(bulletClip);
+    }
+
+    private void MoveInLine()
+    {
+        movement.x = -1.0f;
+        movement.y = 0.0f;
+    }
+
+    private void Follow()
+    {
+        Vector2 targetOffset = (Vector2)targetTransform.position - rb.position;
+        float distance = targetOffset.magnitude;
+        float slowingRadius = 0.5f; // Adjust this value to control the slowing down distance
+        float targetSpeed = (distance > slowingRadius) ? speed : speed * (distance / slowingRadius);
+        Vector2 desiredVelocity = targetOffset.normalized * targetSpeed;
+        movement = desiredVelocity - rb.velocity;
+    }
+
+    private void FireInLine()
+    {
+        movement.x = -1.0f;
+        movement.y = 0.0f;
+    }
+
+    private void StopFollow()
+    {
+        if (!hasStoppedFollowing)
+        {
+            if (Vector2.Distance(transform.position, targetTransform.position) < followThreshold) // Set the distance threshold
+            {
+                movement.x = -1.0f;
+                movement.y = 0.0f;
+                hasStoppedFollowing = true; // Set the flag to true once the enemy stops following
+            }
+            else
+            {
+                Follow();
+            }
+        }
+        else
+        {
+            movement.x = -1.0f;
+            movement.y = 0.0f;
+        }
     }
 }

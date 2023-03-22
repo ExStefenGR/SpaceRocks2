@@ -33,8 +33,7 @@ public class EnemySpawn : MonoBehaviour
                 yield return new WaitForSeconds(spawnCooldown);
             }
 
-            // You can add a break condition here if you want to stop spawning enemies at some point
-            // For example:
+            // break condition here to stop spawning enemies at some point
             // if (someCondition) break;
         }
 

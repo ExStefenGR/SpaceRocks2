@@ -27,7 +27,7 @@ public class BulletPool : MonoBehaviour
     {
         for (int i = 0; i < initialPoolSize; i++)
         {
-            ExpandPool();
+            _ = ExpandPool();
         }
     }
 
@@ -41,7 +41,7 @@ public class BulletPool : MonoBehaviour
 
     public BulletBehavior GetBullet()
     {
-        foreach (var bullet in bulletPool)
+        foreach (BulletBehavior bullet in bulletPool)
         {
             if (!bullet.gameObject.activeInHierarchy)
             {
