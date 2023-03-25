@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
@@ -13,8 +14,10 @@ public class Enemy : MonoBehaviour
     [SerializeField] private AudioClip bulletClip;
     // Enemy Parameters
     [SerializeField] private int hp = 1;
-    [SerializeField] private float fireRate = 1f;
+    [SerializeField] private float fireRate = 1.0f;
     [SerializeField] private float followThreshold = 5.0f;
+    // Handlers
+    [SerializeField] private Slider hpSlider;
     private GameObject target;
     private Transform targetTransform;
     private EnemyState randomState;
@@ -26,7 +29,6 @@ public class Enemy : MonoBehaviour
         MoveInLine,
         Follow,
         FireInLine,
-        FireFollow,
         StopFollow
     };
 
@@ -35,14 +37,18 @@ public class Enemy : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        randomState = (EnemyState)Random.Range(0, 5); // Increase the range to include the new state
+        randomState = (EnemyState)Random.Range(0, 4); // Increase the range to include a new state
         gameObject.layer = LayerMask.NameToLayer("Enemy");
+        
         target = GameObject.Find("Player");
         targetTransform = target.transform;
 
-        if (randomState is EnemyState.FireInLine or EnemyState.FireFollow)
+        hpSlider.maxValue = hp;
+        hpSlider.value = hp;
+
+        if (randomState is EnemyState.FireInLine)
         {
-            InvokeRepeating(nameof(Shoot), 0, fireRate);
+            InvokeRepeating(nameof(Shoot), 0, Random.Range(1,fireRate));
         }
     }
 
@@ -71,9 +77,6 @@ public class Enemy : MonoBehaviour
             case EnemyState.FireInLine:
                 FireInLine();
                 break;
-            case EnemyState.FireFollow:
-                FireInLine(); // Since the current implementation is the same as FireInLine
-                break;
             case EnemyState.StopFollow:
                 StopFollow();
                 break;
@@ -98,7 +101,6 @@ public class Enemy : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Enemy OnCollisionEnter2D with " + collision.gameObject.tag);
         HandleCollision(collision.gameObject);
     }
 
@@ -107,6 +109,7 @@ public class Enemy : MonoBehaviour
         if (other.CompareTag("bullet"))
         {
             hp--;
+            hpSlider.value = hp;
             if (hp <= 0)
             {
                 Destroy(gameObject);
