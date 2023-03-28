@@ -112,6 +112,7 @@ public class Enemy : MonoBehaviour
             hpSlider.value = hp;
             if (hp <= 0)
             {
+                ScoreManager.Instance.AddScore(125);
                 Destroy(gameObject);
             }
         }

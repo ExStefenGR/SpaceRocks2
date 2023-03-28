@@ -4,10 +4,12 @@ public class BulletBehavior : MonoBehaviour
 {
     [SerializeField] private float speed = 10f;
     private Rigidbody2D rb;
+    private ParticleSystem pSystem;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        pSystem = GetComponent<ParticleSystem>();
     }
 
     private void OnEnable()
@@ -24,6 +26,7 @@ public class BulletBehavior : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("barrier") || collision.gameObject.CompareTag("Enemy"))
         {
+            pSystem.Emit(20);
             gameObject.SetActive(false);
         }
     }

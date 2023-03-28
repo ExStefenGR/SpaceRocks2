@@ -7,11 +7,14 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform bulletLaunchOffset;
     [SerializeField] private AudioSource bulletAudioSource;
     [SerializeField] private AudioClip bulletAudioClip;
+    [SerializeField] private BulletBehavior bigBulletPrefab;
 
     private Vector2 currentMovement;
     private Vector2 moveInput;
     private Rigidbody2D rigidBody;
     private Animator animator;
+    private float chargeTime = 0.0f;
+    private float chargeThreshold = 1.0f;
 
     public IInteractable Interactable { get; set; }
 
@@ -57,10 +60,21 @@ public class Player : MonoBehaviour
     {
         if (CurrentState == PlayerState.Normal)
         {
-            ProcessShootingInput();
+            ProcessChargingAndShootingInput();
             ProcessMovementInput();
         }
         UpdateAnimation();
+    }
+    // Update animation parameters
+    private void UpdateAnimation()
+    {
+        animator.SetFloat("direction", currentMovement.y);
+    }
+
+    // FixedUpdate is called at fixed intervals
+    private void FixedUpdate()
+    {
+        MovePlayer();
     }
 
     // Process player input
@@ -70,12 +84,31 @@ public class Player : MonoBehaviour
         moveInput.y = Input.GetAxisRaw("Vertical");
     }
 
-    // FixedUpdate is called at fixed intervals
-    private void FixedUpdate()
-    {
-        MovePlayer();
-    }
 
+    private void ProcessChargingAndShootingInput()
+    {
+        // Check if the player is holding down the charge/shoot button
+        if (Input.GetKey(KeyCode.E))
+        {
+            // Increment the charge time
+            chargeTime += Time.deltaTime;
+        }
+        // Check if the player releases the charge/shoot button
+        else if (Input.GetKeyUp(KeyCode.E))
+        {
+            // Check if the charge time exceeds the charge threshold
+            if (chargeTime >= chargeThreshold)
+            {
+                FireChargedShot();
+            }
+            else
+            {
+                FireRegularShot();
+            }
+            // Reset the charge time
+            chargeTime = 0.0f;
+        }
+    }
     // Move the player based on input
     private void MovePlayer()
     {
@@ -83,20 +116,17 @@ public class Player : MonoBehaviour
         rigidBody.velocity = currentMovement * movementSpeed;
     }
 
-    // Update animation parameters
-    private void UpdateAnimation()
+    private void FireChargedShot()
     {
-        animator.SetFloat("direction", currentMovement.y);
+        BulletBehavior bigBullet = Instantiate(bigBulletPrefab, bulletLaunchOffset.position, bulletLaunchOffset.rotation);
+        bulletAudioSource.PlayOneShot(bulletAudioClip);
     }
-    private void ProcessShootingInput()
+    private void FireRegularShot()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            BulletBehavior bullet = BulletPool.Instance.GetBullet();
-            bullet.transform.position = bulletLaunchOffset.position;
-            bullet.transform.rotation = bulletLaunchOffset.rotation;
-            bullet.gameObject.SetActive(true);
-            bulletAudioSource.PlayOneShot(bulletAudioClip);
-        }
+        BulletBehavior bullet = BulletPool.Instance.GetBullet();
+        bullet.transform.position = bulletLaunchOffset.position;
+        bullet.transform.rotation = bulletLaunchOffset.rotation;
+        bullet.gameObject.SetActive(true);
+        bulletAudioSource.PlayOneShot(bulletAudioClip);
     }
 }

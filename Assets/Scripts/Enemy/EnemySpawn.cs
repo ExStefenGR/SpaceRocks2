@@ -15,12 +15,15 @@ public class EnemySpawn : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        StartCoroutine(SpawnEnemies());
+        _ = StartCoroutine(SpawnEnemies());
     }
 
     private IEnumerator SpawnEnemies()
     {
-        if (isSpawning) yield break;
+        if (isSpawning)
+        {
+            yield break;
+        }
 
         isSpawning = true;
 
@@ -29,7 +32,7 @@ public class EnemySpawn : MonoBehaviour
             for (int i = 0; i < enemiesLimit; i++)
             {
                 Vector3 spawnPosition = offset.position + new Vector3(0, Random.Range(minYOffset, maxYOffset), 0);
-                Instantiate(prefabEnemy, spawnPosition, offset.rotation);
+                _ = Instantiate(prefabEnemy, spawnPosition, offset.rotation);
                 yield return new WaitForSeconds(spawnCooldown);
             }
 
