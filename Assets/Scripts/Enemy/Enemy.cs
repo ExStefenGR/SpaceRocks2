@@ -39,7 +39,7 @@ public class Enemy : MonoBehaviour
         anim = GetComponent<Animator>();
         randomState = (EnemyState)Random.Range(0, 4); // Increase the range to include a new state
         gameObject.layer = LayerMask.NameToLayer("Enemy");
-        
+
         target = GameObject.Find("Player");
         targetTransform = target.transform;
 
@@ -48,7 +48,7 @@ public class Enemy : MonoBehaviour
 
         if (randomState is EnemyState.FireInLine)
         {
-            InvokeRepeating(nameof(Shoot), 0, Random.Range(1,fireRate));
+            InvokeRepeating(nameof(Shoot), 0, Random.Range(1, fireRate));
         }
     }
 
@@ -109,6 +109,16 @@ public class Enemy : MonoBehaviour
         if (other.CompareTag("bullet"))
         {
             hp--;
+            hpSlider.value = hp;
+            if (hp <= 0)
+            {
+                ScoreManager.Instance.AddScore(125);
+                Destroy(gameObject);
+            }
+        }
+        if (other.CompareTag("bigBullet"))
+        {
+            hp -= 2;
             hpSlider.value = hp;
             if (hp <= 0)
             {
