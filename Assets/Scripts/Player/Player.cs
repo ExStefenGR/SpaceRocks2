@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioSource bulletAudioSource;
     [SerializeField] private AudioClip bulletAudioClip;
     [SerializeField] private BulletBehavior bigBulletPrefab;
+
+    [SerializeField] private Slider chargeBar;
 
     private Vector2 currentMovement;
     private Vector2 moveInput;
@@ -64,6 +67,7 @@ public class Player : MonoBehaviour
             ProcessMovementInput();
         }
         UpdateAnimation();
+        UpdateChargeBar();
     }
     // Update animation parameters
     private void UpdateAnimation()
@@ -107,6 +111,7 @@ public class Player : MonoBehaviour
             }
             // Reset the charge time
             chargeTime = 0.0f;
+            UpdateChargeBar();
         }
     }
     // Move the player based on input
@@ -121,6 +126,11 @@ public class Player : MonoBehaviour
         BulletBehavior bigBullet = Instantiate(bigBulletPrefab, bulletLaunchOffset.position, bulletLaunchOffset.rotation);
         bulletAudioSource.PlayOneShot(bulletAudioClip);
     }
+    private void UpdateChargeBar()
+    {
+        chargeBar.value = Mathf.Clamp01(chargeTime / chargeThreshold);
+    }
+
     private void FireRegularShot()
     {
         BulletBehavior bullet = BulletPool.Instance.GetBullet();
