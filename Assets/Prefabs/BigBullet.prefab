@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 3589891345961672311}
   - component: {fileID: 317998901366143928}
   - component: {fileID: 6409821146165860627}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: BigBullet
   m_TagString: bigBullet
   m_Icon: {fileID: 0}
