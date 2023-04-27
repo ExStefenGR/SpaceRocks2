@@ -5,7 +5,6 @@ public class BulletBehavior : MonoBehaviour
     [SerializeField] private float speed = 10f;
     private Rigidbody2D rb;
     private ParticleSystem pSystem;
-    private int bulletHp = 1; //Will let charged bullet pass through one ship
 
     private void Awake()
     {
