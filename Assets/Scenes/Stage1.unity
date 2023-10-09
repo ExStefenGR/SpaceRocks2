@@ -667,8 +667,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -75.00445, y: -0.0022010803, z: 0}
-    m_Extent: {x: 41.004852, y: 41.0061, z: 0}
+    m_Center: {x: -75.0058, y: 0.0025501251, z: 0}
+    m_Extent: {x: 41.003403, y: 41.002647, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -1981,6 +1981,14 @@ PrefabInstance:
       propertyPath: chargeBar
       value: 
       objectReference: {fileID: 1582988964}
+    - target: {fileID: 5416858215219181026, guid: 7f11b5a4b9452cd43b6d95fdc9083986, type: 3}
+      propertyPath: flashDuration
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5416858215219181026, guid: 7f11b5a4b9452cd43b6d95fdc9083986, type: 3}
+      propertyPath: flashInterval
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 5416858215219181031, guid: 7f11b5a4b9452cd43b6d95fdc9083986, type: 3}
       propertyPath: m_SortingOrder
       value: 2

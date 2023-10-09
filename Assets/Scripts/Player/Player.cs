@@ -5,18 +5,16 @@ using TMPro;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float movementSpeed = 5.0f;
-    [SerializeField] private BulletBehavior bulletPrefab;
-    [SerializeField] private BulletBehavior bigBulletPrefab;
+    public readonly float movementSpeed = 5.0f;
     [SerializeField] private Transform bulletLaunchOffset;
     [SerializeField] private AudioSource bulletAudioSource;
     [SerializeField] private AudioClip bulletAudioClip;
 
-    [SerializeField] private float invincibilityDuration = 3.0f;
-    [SerializeField] private int maxHealth = 5;
+    [SerializeField] private readonly float invincibilityDuration = 3.0f;
+    [SerializeField] private readonly int maxHealth = 5;
 
-    [SerializeField] private float flashDuration = 0.2f;
-    [SerializeField] private float flashInterval = 0.1f;
+    private readonly float flashDuration = 3f;
+    private readonly float flashInterval = 0.1f;
 
     private Coroutine flashCoroutine;
     private SpriteRenderer playerSpriteRenderer;
@@ -38,36 +36,6 @@ public class Player : MonoBehaviour
 
     public IInteractable Interactable { get; set; }
 
-    public enum PlayerState
-    {
-        Normal,
-        Paused,
-    }
-
-    private PlayerState _currentState;
-
-    public PlayerState CurrentState
-    {
-        get => _currentState;
-        set
-        {
-            _currentState = value;
-            HandleStateChanged();
-        }
-    }
-    private void HandleStateChanged()
-    {
-        switch (CurrentState)
-        {
-            case PlayerState.Normal:
-                Time.timeScale = 1f;
-                break;
-            case PlayerState.Paused:
-                Time.timeScale = 0f;
-                break;
-        }
-    }
-
     // Start is called before the first frame update
     private void Start()
     {
@@ -81,8 +49,9 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (CurrentState == PlayerState.Normal)
+        if (currentHealth != 0)
         {
+
             // Process mobile input if available, else use keyboard input
             if (Application.isMobilePlatform)
             {
@@ -93,13 +62,13 @@ public class Player : MonoBehaviour
                 ProcessChargingAndShootingInput();
                 ProcessMovementInput();
             }
-        }
-        if (isInvincible)
-        {
-            invincibilityTimer -= Time.deltaTime;
-            if (invincibilityTimer <= 0)
+            if (isInvincible)
             {
-                isInvincible = false;
+                invincibilityTimer -= Time.deltaTime;
+                if (invincibilityTimer <= 0)
+                {
+                    isInvincible = false;
+                }
             }
         }
         UpdateAnimation();
@@ -247,7 +216,7 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!isInvincible)
+        if (!isInvincible && !collision.gameObject.CompareTag("barrier"))
         {
             TakeDamage(1);
             ChangeHealthUI(currentHealth);
