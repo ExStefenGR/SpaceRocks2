@@ -667,8 +667,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -75.006195, y: 0.000749588, z: 0}
-    m_Extent: {x: 41.003498, y: 41.00495, z: 0}
+    m_Center: {x: -75.00445, y: -0.0022010803, z: 0}
+    m_Extent: {x: 41.004852, y: 41.0061, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -830,7 +830,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'HP: {0}'
+  m_text: 'HP: 0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: efd7f9c2844836942a4c9430b6adcb86, type: 2}
   m_sharedMaterial: {fileID: -2306737465866029154, guid: efd7f9c2844836942a4c9430b6adcb86, type: 2}
@@ -864,8 +864,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 1024
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
