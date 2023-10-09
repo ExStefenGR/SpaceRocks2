@@ -4,9 +4,11 @@ using UnityEngine;
 public class BulletPool : MonoBehaviour
 {
     [SerializeField] private BulletBehavior bulletPrefab;
+    [SerializeField] private BulletBehavior bigBulletPrefab;
     [SerializeField] private int initialPoolSize = 10;
 
-    private List<BulletBehavior> bulletPool;
+    private List<BulletBehavior> regularBulletPool; // Separate list for regular bullets
+    private List<BulletBehavior> bigBulletPool;     // Separate list for big bullets
 
     public static BulletPool Instance { get; private set; }
 
@@ -19,7 +21,8 @@ public class BulletPool : MonoBehaviour
         }
 
         Instance = this;
-        bulletPool = new List<BulletBehavior>(initialPoolSize);
+        regularBulletPool = new List<BulletBehavior>(initialPoolSize);
+        bigBulletPool = new List<BulletBehavior>(initialPoolSize);
         InitializePool();
     }
 
@@ -27,21 +30,23 @@ public class BulletPool : MonoBehaviour
     {
         for (int i = 0; i < initialPoolSize; i++)
         {
-            _ = ExpandPool();
+            ExpandPool();
         }
     }
 
-    private BulletBehavior ExpandPool()
+    private void ExpandPool()
     {
-        BulletBehavior newBullet = Instantiate(bulletPrefab, transform);
-        newBullet.gameObject.SetActive(false);
-        bulletPool.Add(newBullet);
-        return newBullet;
+        BulletBehavior newRegularBullet = Instantiate(bulletPrefab, transform);
+        BulletBehavior newBigBullet = Instantiate(bigBulletPrefab, transform);
+        newRegularBullet.gameObject.SetActive(false);
+        newBigBullet.gameObject.SetActive(false);
+        regularBulletPool.Add(newRegularBullet);
+        bigBulletPool.Add(newBigBullet);
     }
 
-    public BulletBehavior GetBullet()
+    public BulletBehavior GetRegularBullet()
     {
-        foreach (BulletBehavior bullet in bulletPool)
+        foreach (BulletBehavior bullet in regularBulletPool)
         {
             if (!bullet.gameObject.activeInHierarchy)
             {
@@ -49,6 +54,23 @@ public class BulletPool : MonoBehaviour
             }
         }
 
-        return ExpandPool();
+        // If no regular bullets are available, expand the pool and return the first regular bullet from the expanded pool
+        ExpandPool();
+        return regularBulletPool[regularBulletPool.Count - 1];
+    }
+
+    public BulletBehavior GetBigBullet()
+    {
+        foreach (BulletBehavior bullet in bigBulletPool)
+        {
+            if (!bullet.gameObject.activeInHierarchy)
+            {
+                return bullet;
+            }
+        }
+
+        // If no big bullets are available, expand the pool and return the first big bullet from the expanded pool
+        ExpandPool();
+        return bigBulletPool[bigBulletPool.Count - 1];
     }
 }
