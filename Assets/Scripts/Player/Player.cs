@@ -46,12 +46,10 @@ public class Player : MonoBehaviour
         ChangeHealthUI(currentHealth);
     }
 
-    // Update is called once per frame
     private void Update()
     {
         if (currentHealth != 0)
         {
-
             // Process mobile input if available, else use keyboard input
             if (Application.isMobilePlatform)
             {
@@ -61,14 +59,6 @@ public class Player : MonoBehaviour
             {
                 ProcessChargingAndShootingInput();
                 ProcessMovementInput();
-            }
-            if (isInvincible)
-            {
-                invincibilityTimer -= Time.deltaTime;
-                if (invincibilityTimer <= 0)
-                {
-                    isInvincible = false;
-                }
             }
         }
         UpdateAnimation();
@@ -84,6 +74,15 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         MovePlayer();
+
+        if (isInvincible)
+        {
+            invincibilityTimer -= Time.deltaTime;
+            if (invincibilityTimer <= 0)
+            {
+                isInvincible = false;
+            }
+        }
     }
 
     // Process player input
@@ -121,16 +120,12 @@ public class Player : MonoBehaviour
 
     private void ProcessChargingAndShootingInput()
     {
-        // Check if the player is holding down the charge/shoot button
         if (Input.GetKey(KeyCode.E))
         {
-            // Increment the charge time
             chargeTime += Time.deltaTime;
         }
-        // Check if the player releases the charge/shoot button
         else if (Input.GetKeyUp(KeyCode.E))
         {
-            // Check if the charge time exceeds the charge threshold
             if (chargeTime >= chargeThreshold)
             {
                 FireChargedShot();
@@ -144,7 +139,6 @@ public class Player : MonoBehaviour
             UpdateChargeBar();
         }
     }
-    // Move the player based on input
     private void MovePlayer()
     {
         currentMovement = moveInput.normalized;
