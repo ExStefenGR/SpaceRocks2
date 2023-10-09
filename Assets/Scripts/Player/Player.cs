@@ -1,15 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using TMPro;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] private float movementSpeed = 5.0f;
     [SerializeField] private BulletBehavior bulletPrefab;
+    [SerializeField] private BulletBehavior bigBulletPrefab;
     [SerializeField] private Transform bulletLaunchOffset;
     [SerializeField] private AudioSource bulletAudioSource;
     [SerializeField] private AudioClip bulletAudioClip;
-    [SerializeField] private BulletBehavior bigBulletPrefab;
 
     [SerializeField] private float invincibilityDuration = 3.0f;
     [SerializeField] private int maxHealth = 5;
@@ -24,6 +25,7 @@ public class Player : MonoBehaviour
     private bool isInvincible = false;
     private int currentHealth;
 
+    [SerializeField] private TextMeshProUGUI hp;
     [SerializeField] private Slider chargeBar;
 
     private Vector2 currentMovement;
@@ -32,6 +34,7 @@ public class Player : MonoBehaviour
     private Animator animator;
     private float chargeTime = 0.0f;
     private float chargeThreshold = 1.0f;
+
 
     public IInteractable Interactable { get; set; }
 
@@ -72,6 +75,7 @@ public class Player : MonoBehaviour
         animator = GetComponent<Animator>();
         playerSpriteRenderer = GetComponent<SpriteRenderer>();
         currentHealth = maxHealth;
+        ChangeHealthUI(currentHealth);
     }
 
     // Update is called once per frame
@@ -180,9 +184,13 @@ public class Player : MonoBehaviour
 
     private void FireChargedShot()
     {
-        BulletBehavior bigBullet = Instantiate(bigBulletPrefab, bulletLaunchOffset.position, bulletLaunchOffset.rotation);
+        BulletBehavior bigBullet = BulletPool.Instance.GetBigBullet();
+        bigBullet.transform.position = bulletLaunchOffset.position;
+        bigBullet.transform.rotation = bulletLaunchOffset.rotation;
+        bigBullet.gameObject.SetActive(true);
         bulletAudioSource.PlayOneShot(bulletAudioClip);
     }
+
     private void UpdateChargeBar()
     {
         chargeBar.value = Mathf.Clamp01(chargeTime / chargeThreshold);
@@ -190,12 +198,13 @@ public class Player : MonoBehaviour
 
     private void FireRegularShot()
     {
-        BulletBehavior bullet = BulletPool.Instance.GetBullet();
-        bullet.transform.position = bulletLaunchOffset.position;
-        bullet.transform.rotation = bulletLaunchOffset.rotation;
-        bullet.gameObject.SetActive(true);
+        BulletBehavior regularBullet = BulletPool.Instance.GetRegularBullet();
+        regularBullet.transform.position = bulletLaunchOffset.position;
+        regularBullet.transform.rotation = bulletLaunchOffset.rotation;
+        regularBullet.gameObject.SetActive(true);
         bulletAudioSource.PlayOneShot(bulletAudioClip);
     }
+
 
     private void TakeDamage(int damageAmount)
     {
@@ -241,10 +250,16 @@ public class Player : MonoBehaviour
         if (!isInvincible)
         {
             TakeDamage(1);
-            Debug.Log(currentHealth);
+            ChangeHealthUI(currentHealth);
             isInvincible = true;
             invincibilityTimer = invincibilityDuration;
         }
+    }
+
+    private string ChangeHealthUI(int health)
+    {
+        string result = $"HP: {health}";
+        return hp.text = result;
     }
 
 }
