@@ -15,7 +15,7 @@ public class EnemySpawn : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        _ = StartCoroutine(SpawnEnemies());
+        StartCoroutine(SpawnEnemies());
     }
 
     private IEnumerator SpawnEnemies()
@@ -29,17 +29,40 @@ public class EnemySpawn : MonoBehaviour
 
         while (true)
         {
-            for (int i = 0; i < enemiesLimit; i++)
+            if (IsPlayerActive()) // Check if the player is active
             {
-                Vector3 spawnPosition = offset.position + new Vector3(0, Random.Range(minYOffset, maxYOffset), 0);
-                _ = Instantiate(prefabEnemy, spawnPosition, offset.rotation);
-                yield return new WaitForSeconds(spawnCooldown);
+                for (int i = 0; i < enemiesLimit; i++)
+                {
+                    Vector3 spawnPosition = offset.position + new Vector3(0, Random.Range(minYOffset, maxYOffset), 0);
+                    Instantiate(prefabEnemy, spawnPosition, offset.rotation);
+                    yield return new WaitForSeconds(spawnCooldown);
+                }
             }
+            else
+            {
+                // Delete all existing enemies
+                Enemy[] enemies = FindObjectsOfType<Enemy>();
+                foreach (Enemy enemy in enemies)
+                {
+                    Destroy(enemy.gameObject);
+                }
 
-            // break condition here to stop spawning enemies at some point
-            // if (someCondition) break;
+                // Stop spawning enemies
+                break;
+            }
         }
 
-        //isSpawning = false;
+        isSpawning = false;
+    }
+
+    private bool IsPlayerActive()
+    {
+        GameObject player = GameObject.Find("Player");
+        if (player != null)
+        {
+            return player.activeSelf;
+        }
+
+        return false;
     }
 }

@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 5416858215219181027}
   - component: {fileID: 5416858215219181025}
   - component: {fileID: 5416858215219181024}
-  - component: {fileID: 1371393413378794903}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -109,6 +108,11 @@ MonoBehaviour:
   bulletAudioSource: {fileID: 4217910436485744789}
   bulletAudioClip: {fileID: 8300000, guid: 34479cbb1225f214fa1485729df2b7db, type: 3}
   bigBulletPrefab: {fileID: 3279100647581276188, guid: 61b428407c69eb04f9723c127f0bf28c, type: 3}
+  invincibilityDuration: 3
+  maxHealth: 5
+  flashDuration: 0.2
+  flashInterval: 0.1
+  chargeBar: {fileID: 0}
 --- !u!114 &8371781042338188465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,6 +168,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!61 &5416858215219181024
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -190,14 +195,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.25, y: 0.8725}
   m_EdgeRadius: 0
---- !u!81 &1371393413378794903
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1998282745651793035}
-  m_Enabled: 1
 --- !u!1 &1998282745859926451
 GameObject:
   m_ObjectHideFlags: 0

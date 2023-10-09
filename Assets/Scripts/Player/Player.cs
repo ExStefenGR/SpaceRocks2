@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
@@ -9,6 +10,19 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioSource bulletAudioSource;
     [SerializeField] private AudioClip bulletAudioClip;
     [SerializeField] private BulletBehavior bigBulletPrefab;
+
+    [SerializeField] private float invincibilityDuration = 3.0f;
+    [SerializeField] private int maxHealth = 5;
+
+    [SerializeField] private float flashDuration = 0.2f;
+    [SerializeField] private float flashInterval = 0.1f;
+
+    private Coroutine flashCoroutine;
+    private SpriteRenderer playerSpriteRenderer;
+
+    private float invincibilityTimer = 0.0f;
+    private bool isInvincible = false;
+    private int currentHealth;
 
     [SerializeField] private Slider chargeBar;
 
@@ -56,6 +70,8 @@ public class Player : MonoBehaviour
     {
         rigidBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        playerSpriteRenderer = GetComponent<SpriteRenderer>();
+        currentHealth = maxHealth;
     }
 
     // Update is called once per frame
@@ -63,8 +79,24 @@ public class Player : MonoBehaviour
     {
         if (CurrentState == PlayerState.Normal)
         {
-            ProcessChargingAndShootingInput();
-            ProcessMovementInput();
+            // Process mobile input if available, else use keyboard input
+            if (Application.isMobilePlatform)
+            {
+                ProcessMobileInput();
+            }
+            else
+            {
+                ProcessChargingAndShootingInput();
+                ProcessMovementInput();
+            }
+        }
+        if (isInvincible)
+        {
+            invincibilityTimer -= Time.deltaTime;
+            if (invincibilityTimer <= 0)
+            {
+                isInvincible = false;
+            }
         }
         UpdateAnimation();
         UpdateChargeBar();
@@ -88,6 +120,31 @@ public class Player : MonoBehaviour
         moveInput.y = Input.GetAxisRaw("Vertical");
     }
 
+    // Process mobile input
+    private void ProcessMobileInput()
+    {
+        // Get the mobile controls instance
+        MobileControls mobileControls = MobileControls.Instance;
+        if (mobileControls == null)
+            return;
+
+        moveInput = mobileControls.IsMoving ? mobileControls.MoveInput : Vector2.zero;
+        if (mobileControls.IsFiring)
+        {
+            // Check if the charge time exceeds the charge threshold
+            if (chargeTime >= chargeThreshold)
+            {
+                FireChargedShot();
+            }
+            else
+            {
+                FireRegularShot();
+            }
+            // Reset the charge time
+            chargeTime = 0.0f;
+            UpdateChargeBar();
+        }
+    }
 
     private void ProcessChargingAndShootingInput()
     {
@@ -139,4 +196,55 @@ public class Player : MonoBehaviour
         bullet.gameObject.SetActive(true);
         bulletAudioSource.PlayOneShot(bulletAudioClip);
     }
+
+    private void TakeDamage(int damageAmount)
+    {
+        currentHealth -= damageAmount;
+
+        if (currentHealth <= 0)
+        {
+            OnDeath();
+        }
+        else
+        {
+            if (flashCoroutine != null)
+            {
+                StopCoroutine(flashCoroutine);
+            }
+            flashCoroutine = StartCoroutine(FlashPlayer());
+        }
+    }
+
+    private IEnumerator FlashPlayer()
+    {
+        isInvincible = true;
+        float timer = flashDuration;
+
+        while (timer > 0)
+        {
+            playerSpriteRenderer.enabled = !playerSpriteRenderer.enabled;
+            yield return new WaitForSeconds(flashInterval);
+            timer -= flashInterval;
+        }
+
+        playerSpriteRenderer.enabled = true;
+        isInvincible = false;
+    }
+
+    private void OnDeath()
+    {
+        gameObject.SetActive(false);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!isInvincible)
+        {
+            TakeDamage(1);
+            Debug.Log(currentHealth);
+            isInvincible = true;
+            invincibilityTimer = invincibilityDuration;
+        }
+    }
+
 }

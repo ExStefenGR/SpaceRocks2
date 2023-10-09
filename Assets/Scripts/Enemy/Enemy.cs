@@ -41,7 +41,10 @@ public class Enemy : MonoBehaviour
         gameObject.layer = LayerMask.NameToLayer("Enemy");
 
         target = GameObject.Find("Player");
-        targetTransform = target.transform;
+        if (target != null)
+        {
+            targetTransform = target.transform;
+        }
 
         hpSlider.maxValue = hp;
         hpSlider.value = hp;
@@ -51,6 +54,7 @@ public class Enemy : MonoBehaviour
             InvokeRepeating(nameof(Shoot), 0, Random.Range(1, fireRate));
         }
     }
+
 
     // FixedUpdate is called once per physics frame
     private void FixedUpdate()
@@ -113,7 +117,10 @@ public class Enemy : MonoBehaviour
             if (hp <= 0)
             {
                 ScoreManager.Instance.AddScore(125);
-                Destroy(gameObject);
+                if (target != null && target.activeSelf)
+                {
+                    Destroy(gameObject);
+                }
             }
         }
         if (other.CompareTag("bigBullet"))
@@ -123,15 +130,28 @@ public class Enemy : MonoBehaviour
             if (hp <= 0)
             {
                 ScoreManager.Instance.AddScore(125);
-                Destroy(gameObject);
+                if (target != null && target.activeSelf)
+                {
+                    Destroy(gameObject);
+                }
             }
         }
         if (other.CompareTag("Enemybarrier"))
         {
-            Destroy(gameObject);
+            if (target != null && target.activeSelf)
+            {
+                Destroy(gameObject);
+            }
+        }
+        if (other.CompareTag("Player"))
+        {
+            if(target != null && target.activeSelf) 
+            {
+                ScoreManager.Instance.AddScore(50);
+                Destroy(gameObject);
+            }
         }
     }
-
     private void Shoot()
     {
         _ = Instantiate(bulletPrefab, launchOffset.position, launchOffset.rotation);
@@ -146,14 +166,20 @@ public class Enemy : MonoBehaviour
 
     private void Follow()
     {
-        Vector2 targetOffset = (Vector2)targetTransform.position - rb.position;
-        float distance = targetOffset.magnitude;
-        float slowingRadius = 0.5f; // Adjust this value to control the slowing down distance
-        float targetSpeed = (distance > slowingRadius) ? speed : speed * (distance / slowingRadius);
-        Vector2 desiredVelocity = targetOffset.normalized * targetSpeed;
-        movement = desiredVelocity - rb.velocity;
+        if (targetTransform != null)
+        {
+            Vector2 targetOffset = (Vector2)targetTransform.position - rb.position;
+            float distance = targetOffset.magnitude;
+            float slowingRadius = 0.5f; // Adjust this value to control the slowing down distance
+            float targetSpeed = (distance > slowingRadius) ? speed : speed * (distance / slowingRadius);
+            Vector2 desiredVelocity = targetOffset.normalized * targetSpeed;
+            movement = desiredVelocity - rb.velocity;
+        }
+        else
+        {
+            movement.x = -1.0f; //if player is dead, keep moving to the collider
+        }
     }
-
     private void FireInLine()
     {
         movement.x = -1.0f;
@@ -164,7 +190,7 @@ public class Enemy : MonoBehaviour
     {
         if (!hasStoppedFollowing)
         {
-            if (Vector2.Distance(transform.position, targetTransform.position) < followThreshold) // Set the distance threshold
+            if (targetTransform != null && Vector2.Distance(transform.position, targetTransform.position) < followThreshold) // Set the distance threshold
             {
                 movement.x = -1.0f;
                 movement.y = 0.0f;
@@ -181,4 +207,5 @@ public class Enemy : MonoBehaviour
             movement.y = 0.0f;
         }
     }
+
 }
