@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class EnemySpawn : MonoBehaviour
 {
-    [SerializeField] private int enemiesLimit = 5;
-    [SerializeField] private int spawnCooldown = 5;
+    [SerializeField] private readonly int enemiesLimit = 5;
+    [SerializeField] private float spawnCooldown = 5.0f;
     [SerializeField] private Enemy prefabEnemy;
     [SerializeField] private Transform offset;
     [SerializeField] private float minYOffset = -2.0f;

@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D rigidBody;
     private Animator animator;
     private float chargeTime = 0.0f;
-    private float chargeThreshold = 1.0f;
+    private readonly float chargeThreshold = 1.0f;
 
 
     public IInteractable Interactable { get; set; }
@@ -60,9 +60,9 @@ public class Player : MonoBehaviour
                 ProcessChargingAndShootingInput();
                 ProcessMovementInput();
             }
+
         }
         UpdateAnimation();
-        UpdateChargeBar();
     }
     // Update animation parameters
     private void UpdateAnimation()
@@ -123,6 +123,7 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.E))
         {
             chargeTime += Time.deltaTime;
+            UpdateChargeBar();
         }
         else if (Input.GetKeyUp(KeyCode.E))
         {
@@ -205,6 +206,8 @@ public class Player : MonoBehaviour
 
     private void OnDeath()
     {
+        chargeTime = 0.0f;
+        UpdateChargeBar();
         gameObject.SetActive(false);
     }
 
