@@ -6,7 +6,6 @@ public class Enemy : MonoBehaviour
     private Vector2 movement = Vector2.zero;
     private Rigidbody2D rb;
     private Animator anim;
-    public bool isPaused = false;
     [SerializeField] private float speed = 5.0f;
     [SerializeField] private EnemyBullet bulletPrefab;
     [SerializeField] private Transform launchOffset;
@@ -15,7 +14,7 @@ public class Enemy : MonoBehaviour
     // Enemy Parameters
     [SerializeField] private int hp = 1;
     [SerializeField] private float fireRate = 1.0f;
-    [SerializeField] private float followThreshold = 5.0f;
+    [SerializeField] private readonly float followThreshold = 5.0f;
     // Handlers
     [SerializeField] private Slider hpSlider;
     private GameObject target;
@@ -59,12 +58,9 @@ public class Enemy : MonoBehaviour
     // FixedUpdate is called once per physics frame
     private void FixedUpdate()
     {
-        if (!isPaused)
-        {
-            ProcessInput();
-            Move();
-            Animate();
-        }
+        ProcessInput();
+        Move();
+        Animate();
     }
 
     // Behaviour here
@@ -110,46 +106,47 @@ public class Enemy : MonoBehaviour
 
     private void HandleCollision(GameObject other)
     {
-        if (other.CompareTag("bullet"))
+        switch (other.tag)
         {
-            hp--;
-            hpSlider.value = hp;
-            if (hp <= 0)
-            {
-                ScoreManager.Instance.AddScore(125);
+            case "bullet":
+                hp--;
+                hpSlider.value = hp;
+                if (hp <= 0)
+                {
+                    ScoreManager.Instance.AddScore(125);
+                    if (target != null && target.activeSelf)
+                    {
+                        Destroy(gameObject);
+                    }
+                }
+                break;
+            case "bigBullet":
+                hp -= 2;
+                hpSlider.value = hp;
+                if (hp <= 0)
+                {
+                    ScoreManager.Instance.AddScore(125);
+                    if (target != null && target.activeSelf)
+                    {
+                        Destroy(gameObject);
+                    }
+                }
+                break;
+            case "Enemybarrier":
                 if (target != null && target.activeSelf)
                 {
                     Destroy(gameObject);
                 }
-            }
-        }
-        if (other.CompareTag("bigBullet"))
-        {
-            hp -= 2;
-            hpSlider.value = hp;
-            if (hp <= 0)
-            {
-                ScoreManager.Instance.AddScore(125);
+                break;
+            case "Player":
                 if (target != null && target.activeSelf)
                 {
+                    ScoreManager.Instance.AddScore(50);
                     Destroy(gameObject);
                 }
-            }
-        }
-        if (other.CompareTag("Enemybarrier"))
-        {
-            if (target != null && target.activeSelf)
-            {
-                Destroy(gameObject);
-            }
-        }
-        if (other.CompareTag("Player"))
-        {
-            if(target != null && target.activeSelf) 
-            {
-                ScoreManager.Instance.AddScore(50);
-                Destroy(gameObject);
-            }
+                break;
+            default:
+                break;
         }
     }
     private void Shoot()
