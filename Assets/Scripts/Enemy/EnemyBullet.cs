@@ -22,7 +22,15 @@ public class EnemyBullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.gameObject.CompareTag("Enemybarrier") || collider.gameObject.CompareTag("Enemy"))
+        if (collider.gameObject.CompareTag("Enemybarrier") || collider.gameObject.CompareTag("Enemy")|| collider.gameObject.CompareTag("bigBullet"))
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("bigBullet"))
         {
             Destroy(gameObject);
         }
