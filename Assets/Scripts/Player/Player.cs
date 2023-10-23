@@ -10,8 +10,8 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioSource bulletAudioSource;
     [SerializeField] private AudioClip bulletAudioClip;
 
-    [SerializeField] private readonly float invincibilityDuration = 3.0f;
-    [SerializeField] private readonly int maxHealth = 5;
+    private readonly float invincibilityDuration = 3.0f;
+    private readonly int maxHealth = 5;
 
     private readonly float flashDuration = 3f;
     private readonly float flashInterval = 0.1f;
