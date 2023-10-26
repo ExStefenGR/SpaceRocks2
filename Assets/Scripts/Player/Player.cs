@@ -294,6 +294,7 @@ public class Player : MonoBehaviour
 
     private IEnumerator ForceField()
     {
+        //TODO: Create a separate function instead of flashplayer. add a better visual cue
         float forceFieldDuration = 10.0f;
         StartCoroutine(FlashPlayer()); // Flash the player to indicate invincibility
         isInvincible = true; // Enable invincibility

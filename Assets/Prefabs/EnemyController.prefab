@@ -44,8 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63bb922e495a47b44b5ea27cdcd0019a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnCooldown: 5
-  powerUpSpawnCooldown: 60
+  spawnCooldown: 2
+  powerUpSpawnCooldown: 25
   prefabEnemy: {fileID: 4684850950257166336, guid: f9181746abf8b614592b83f3a0f89465, type: 3}
   powerUpEnemyPrefab: {fileID: 5807170066588075701, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
   offset: {fileID: 1848903133315624343}
