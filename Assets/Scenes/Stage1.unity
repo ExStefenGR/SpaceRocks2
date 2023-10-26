@@ -1617,10 +1617,6 @@ PrefabInstance:
       propertyPath: enemiesLimit
       value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: 1848903133315624342, guid: 92cc3d89684b1f7409753c80844c6634, type: 3}
-      propertyPath: powerUpSpawnCooldown
-      value: 25
-      objectReference: {fileID: 0}
     - target: {fileID: 1848903133315624343, guid: 92cc3d89684b1f7409753c80844c6634, type: 3}
       propertyPath: m_RootOrder
       value: 5
