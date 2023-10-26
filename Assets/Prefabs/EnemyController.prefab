@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1848903133315624336}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 16, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1848903133315624342
 MonoBehaviour:
@@ -44,9 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63bb922e495a47b44b5ea27cdcd0019a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemiesLimit: 15
-  spawnCooldown: 2
+  spawnCooldown: 5
+  powerUpSpawnCooldown: 60
   prefabEnemy: {fileID: 4684850950257166336, guid: f9181746abf8b614592b83f3a0f89465, type: 3}
+  powerUpEnemyPrefab: {fileID: 5807170066588075701, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
   offset: {fileID: 1848903133315624343}
-  minYOffset: -4.5
-  maxYOffset: 4.5

@@ -15,7 +15,7 @@ public class ScoreManager : MonoBehaviour
         {
             Instance = this;
 
-            GameObject persistentObject = new GameObject("PersistentScoreManager");
+            GameObject persistentObject = new("PersistentScoreManager");
             ScoreManager persistentScoreManager = persistentObject.AddComponent<ScoreManager>();
             persistentObject.transform.SetParent(null);
             DontDestroyOnLoad(persistentObject);

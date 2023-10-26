@@ -22,6 +22,8 @@ public class Enemy : MonoBehaviour
     private EnemyState randomState;
     private bool hasStoppedFollowing = false;
 
+    protected bool canShoot = true;
+
     // Enum for states
     private enum EnemyState
     {
@@ -32,7 +34,7 @@ public class Enemy : MonoBehaviour
     };
 
     // Start is called before the first frame update
-    private void Start()
+    protected void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
@@ -48,7 +50,7 @@ public class Enemy : MonoBehaviour
         hpSlider.maxValue = hp;
         hpSlider.value = hp;
 
-        if (randomState is EnemyState.FireInLine)
+        if (canShoot && randomState is EnemyState.FireInLine)
         {
             InvokeRepeating(nameof(Shoot), 0, Random.Range(1, fireRate));
         }
@@ -64,7 +66,7 @@ public class Enemy : MonoBehaviour
     }
 
     // Behaviour here
-    private void ProcessInput()
+    protected virtual void ProcessInput()
     {
         switch (randomState)
         {
@@ -83,13 +85,13 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Move()
+    protected void Move()
     {
         Vector2 targetVelocity = new(movement.x * speed, movement.y * speed);
         rb.velocity = Vector2.Lerp(rb.velocity, targetVelocity, Time.fixedDeltaTime);
     }
 
-    private void Animate()
+    protected void Animate()
     {
         anim.SetFloat("direction", movement.y);
     }
@@ -117,6 +119,7 @@ public class Enemy : MonoBehaviour
                     if (target != null && target.activeSelf)
                     {
                         Destroy(gameObject);
+                        OnDestroyed();
                     }
                 }
                 break;
@@ -129,6 +132,7 @@ public class Enemy : MonoBehaviour
                     if (target != null && target.activeSelf)
                     {
                         Destroy(gameObject);
+                        OnDestroyed();
                     }
                 }
                 break;
@@ -143,6 +147,7 @@ public class Enemy : MonoBehaviour
                 {
                     ScoreManager.Instance.AddScore(50);
                     Destroy(gameObject);
+                    OnDestroyed();
                 }
                 break;
             default:
@@ -155,7 +160,7 @@ public class Enemy : MonoBehaviour
         bulletAudio.PlayOneShot(bulletClip);
     }
 
-    private void MoveInLine()
+    protected void MoveInLine()
     {
         movement.x = -1.0f;
         movement.y = 0.0f;
@@ -203,6 +208,12 @@ public class Enemy : MonoBehaviour
             movement.x = -1.0f;
             movement.y = 0.0f;
         }
+    }
+
+
+    protected virtual void OnDestroyed()
+    {
+        //Maybe add particles for explosions?
     }
 
 }

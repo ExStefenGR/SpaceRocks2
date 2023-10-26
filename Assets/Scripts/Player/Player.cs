@@ -33,6 +33,10 @@ public class Player : MonoBehaviour
     private float chargeTime = 0.0f;
     private readonly float chargeThreshold = 1.0f;
 
+    private bool isDiagonalShootingActive = false;
+    private Coroutine diagonalShootingCoroutine;
+    private Coroutine forceFieldCoroutine;
+
 
     public IInteractable Interactable { get; set; }
 
@@ -163,10 +167,23 @@ public class Player : MonoBehaviour
     private void FireRegularShot()
     {
         BulletBehavior regularBullet = BulletPool.Instance.GetRegularBullet();
-        regularBullet.transform.position = bulletLaunchOffset.position;
-        regularBullet.transform.rotation = bulletLaunchOffset.rotation;
+        regularBullet.transform.SetPositionAndRotation(bulletLaunchOffset.position, bulletLaunchOffset.rotation);
         regularBullet.gameObject.SetActive(true);
         bulletAudioSource.PlayOneShot(bulletAudioClip);
+
+        // If diagonal shooting is active
+        if (isDiagonalShootingActive)
+        {
+            // Shoot up-diagonal
+            BulletBehavior upDiagonalBullet = BulletPool.Instance.GetRegularBullet();
+            upDiagonalBullet.transform.SetPositionAndRotation(bulletLaunchOffset.position, bulletLaunchOffset.rotation * Quaternion.Euler(0, 0, 45));
+            upDiagonalBullet.gameObject.SetActive(true);
+
+            // Shoot down-diagonal
+            BulletBehavior downDiagonalBullet = BulletPool.Instance.GetRegularBullet();
+            downDiagonalBullet.transform.SetPositionAndRotation(bulletLaunchOffset.position, bulletLaunchOffset.rotation * Quaternion.Euler(0, 0, -45));
+            downDiagonalBullet.gameObject.SetActive(true);
+        }
     }
 
 
@@ -186,6 +203,11 @@ public class Player : MonoBehaviour
             }
             flashCoroutine = StartCoroutine(FlashPlayer());
         }
+    }
+
+    private void HPUp (int hpUp)
+    {
+        currentHealth += hpUp;
     }
 
     private IEnumerator FlashPlayer()
@@ -227,5 +249,63 @@ public class Player : MonoBehaviour
         string result = $"HP: {health}";
         return hp.text = result;
     }
+
+    public void ActivatePowerUp(PowerUpType type)
+    {
+        switch (type)
+        {
+            case PowerUpType.DiagonalShooting:
+                if (diagonalShootingCoroutine != null)
+                {
+                    StopCoroutine(diagonalShootingCoroutine);
+                }
+                diagonalShootingCoroutine = StartCoroutine(DiagonalShooting());
+                break;
+
+            case PowerUpType.Forcefield:
+                if (forceFieldCoroutine != null)
+                {
+                    StopCoroutine(forceFieldCoroutine);
+                }
+                forceFieldCoroutine = StartCoroutine(ForceField());
+                break;
+
+            case PowerUpType.LifeUp:
+                HPUp(1);
+                ChangeHealthUI(currentHealth);
+                break;
+        }
+    }
+
+
+    private IEnumerator DiagonalShooting()
+    {
+        float diagonalShootingDuration = 20.0f;
+        isDiagonalShootingActive = true; // Enable diagonal shooting
+
+        while (diagonalShootingDuration > 0)
+        {
+            yield return new WaitForSeconds(1);
+            diagonalShootingDuration -= 1;
+        }
+
+        isDiagonalShootingActive = false; // Disable diagonal shooting after time runs out
+    }
+
+    private IEnumerator ForceField()
+    {
+        float forceFieldDuration = 10.0f;
+        StartCoroutine(FlashPlayer()); // Flash the player to indicate invincibility
+        isInvincible = true; // Enable invincibility
+
+        while (forceFieldDuration > 0)
+        {
+            yield return new WaitForSeconds(1);
+            forceFieldDuration -= 1;
+        }
+
+        isInvincible = false; // Disable invincibility after time runs out
+    }
+
 
 }

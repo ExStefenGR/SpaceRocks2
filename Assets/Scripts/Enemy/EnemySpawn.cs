@@ -3,38 +3,31 @@ using UnityEngine;
 
 public class EnemySpawn : MonoBehaviour
 {
-    [SerializeField] private readonly int enemiesLimit = 5;
     [SerializeField] private float spawnCooldown = 5.0f;
+    [SerializeField] private float powerUpSpawnCooldown = 60.0f;
     [SerializeField] private Enemy prefabEnemy;
+    [SerializeField] private Enemy powerUpEnemyPrefab;
     [SerializeField] private Transform offset;
-    [SerializeField] private float minYOffset = -2.0f;
-    [SerializeField] private float maxYOffset = 2.0f;
-
-    private bool isSpawning;
+    private readonly int enemiesLimit = 5;
+    private readonly float minYOffset = -4.5f;
+    private readonly float maxYOffset = 4.5f;
 
     // Start is called before the first frame update
     private void Start()
     {
         StartCoroutine(SpawnEnemies());
+        StartCoroutine(SpawnPowerUpEnemy());
     }
 
     private IEnumerator SpawnEnemies()
     {
-        if (isSpawning)
-        {
-            yield break;
-        }
-
-        isSpawning = true;
-
         while (true)
         {
-            if (IsPlayerActive()) // Check if the player is active
+            if (IsPlayerActive())
             {
                 for (int i = 0; i < enemiesLimit; i++)
                 {
-                    Vector3 spawnPosition = offset.position + new Vector3(0, Random.Range(minYOffset, maxYOffset), 0);
-                    Instantiate(prefabEnemy, spawnPosition, offset.rotation);
+                    SpawnEnemy(prefabEnemy);
                     yield return new WaitForSeconds(spawnCooldown);
                 }
             }
@@ -46,13 +39,35 @@ public class EnemySpawn : MonoBehaviour
                 {
                     Destroy(enemy.gameObject);
                 }
-
-                // Stop spawning enemies
                 break;
             }
         }
+    }
 
-        isSpawning = false;
+    private IEnumerator SpawnPowerUpEnemy()
+    {
+        float powerUpSpawnTimer = 0;
+
+        while (true)
+        {
+            if (IsPlayerActive())
+            {
+                powerUpSpawnTimer += Time.deltaTime;
+                
+                if (powerUpSpawnTimer >= powerUpSpawnCooldown)
+                {
+                    SpawnEnemy(powerUpEnemyPrefab);
+                    powerUpSpawnTimer = 0;
+                }
+            }
+            yield return null;  // Wait for the next frame
+        }
+    }
+
+    private void SpawnEnemy(Enemy enemyPrefab)
+    {
+        Vector3 spawnPosition = offset.position + new Vector3(0, Random.Range(minYOffset, maxYOffset), 0);
+        Instantiate(enemyPrefab, spawnPosition, offset.rotation);
     }
 
     private bool IsPlayerActive()

@@ -102,16 +102,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b53cda60891b71648be25fd5eaf9eaeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 5
-  bulletPrefab: {fileID: 3279100647581276188, guid: ac52da913e37261439fd38192905f9b2, type: 3}
   bulletLaunchOffset: {fileID: 1998282745859926450}
   bulletAudioSource: {fileID: 4217910436485744789}
   bulletAudioClip: {fileID: 8300000, guid: 34479cbb1225f214fa1485729df2b7db, type: 3}
-  bigBulletPrefab: {fileID: 3279100647581276188, guid: 61b428407c69eb04f9723c127f0bf28c, type: 3}
-  invincibilityDuration: 3
-  maxHealth: 5
-  flashDuration: 3
-  flashInterval: 0.1
+  hp: {fileID: 0}
   chargeBar: {fileID: 0}
 --- !u!114 &8371781042338188465
 MonoBehaviour:

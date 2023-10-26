@@ -667,8 +667,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -74.99785, y: -0.0018997192, z: 0}
-    m_Extent: {x: 41.004448, y: 41.0039, z: 0}
+    m_Center: {x: -75.00505, y: 0.0015506744, z: 0}
+    m_Extent: {x: 40.99785, y: 40.99945, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -773,63 +773,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 653565042}
   m_CullTransparentMesh: 1
---- !u!1001 &1040700361
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2731944040957767678, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -104.018906
-      objectReference: {fileID: 0}
-    - target: {fileID: 2731944040957767678, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 3.632341
-      objectReference: {fileID: 0}
-    - target: {fileID: 2731944040957767678, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2731944040957767678, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 2731944040957767678, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2731944040957767678, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2731944040957767678, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 2731944040957767678, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2731944040957767678, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2731944040957767678, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 5372158807120606986, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
-      propertyPath: m_Name
-      value: PowerUp
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: c75431dd4b041c2a7960d90fc006fcb4, type: 3}
 --- !u!1 &1113760220
 GameObject:
   m_ObjectHideFlags: 0
@@ -2046,10 +1989,6 @@ PrefabInstance:
       propertyPath: flashInterval
       value: 0.1
       objectReference: {fileID: 0}
-    - target: {fileID: 5416858215219181031, guid: 7f11b5a4b9452cd43b6d95fdc9083986, type: 3}
-      propertyPath: m_SortingOrder
-      value: 2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2066,4 +2005,3 @@ SceneRoots:
   - {fileID: 5416858215086704415}
   - {fileID: 1911386696}
   - {fileID: 1363384741}
-  - {fileID: 1040700361}
