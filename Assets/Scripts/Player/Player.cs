@@ -6,11 +6,13 @@ using TMPro;
 public class Player : MonoBehaviour
 {
     public readonly float movementSpeed = 5.0f;
+
     [SerializeField] private Transform bulletLaunchOffset;
     [SerializeField] private AudioSource bulletAudioSource;
     [SerializeField] private AudioClip bulletAudioClip;
 
-    private readonly float invincibilityDuration = 3.0f;
+    private readonly float invincibilityDuration = 10.0f;
+    private readonly float regularInvincibilityDuration = 3.0f;
     private readonly int maxHealth = 5;
 
     private readonly float flashDuration = 3f;
@@ -21,6 +23,8 @@ public class Player : MonoBehaviour
 
     private float invincibilityTimer = 0.0f;
     private bool isInvincible = false;
+    private float currentInvincibilityTime;
+    private bool isRegularlyInvincible = false;
     private int currentHealth;
 
     [SerializeField] private TextMeshProUGUI hp;
@@ -39,6 +43,7 @@ public class Player : MonoBehaviour
 
 
     public IInteractable Interactable { get; set; }
+    private ParticleSystem invincibilityParticleSystem;
 
     // Start is called before the first frame update
     private void Start()
@@ -46,6 +51,7 @@ public class Player : MonoBehaviour
         rigidBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         playerSpriteRenderer = GetComponent<SpriteRenderer>();
+        invincibilityParticleSystem = GetComponent<ParticleSystem>();
         currentHealth = maxHealth;
         ChangeHealthUI(currentHealth);
     }
@@ -79,12 +85,12 @@ public class Player : MonoBehaviour
     {
         MovePlayer();
 
-        if (isInvincible)
+        if (isRegularlyInvincible)
         {
-            invincibilityTimer -= Time.deltaTime;
-            if (invincibilityTimer <= 0)
+            currentInvincibilityTime -= Time.fixedDeltaTime;
+            if (currentInvincibilityTime <= 0)
             {
-                isInvincible = false;
+                isRegularlyInvincible = false;
             }
         }
     }
@@ -189,7 +195,10 @@ public class Player : MonoBehaviour
 
     private void TakeDamage(int damageAmount)
     {
+        if (isInvincible) return;
+
         currentHealth -= damageAmount;
+        ChangeHealthUI(currentHealth);
 
         if (currentHealth <= 0)
         {
@@ -197,34 +206,44 @@ public class Player : MonoBehaviour
         }
         else
         {
-            if (flashCoroutine != null)
-            {
-                StopCoroutine(flashCoroutine);
-            }
+            if (flashCoroutine != null) StopCoroutine(flashCoroutine);
             flashCoroutine = StartCoroutine(FlashPlayer());
+            isInvincible = true;
+            StartCoroutine(Invincibility());
         }
     }
 
-    private void HPUp (int hpUp)
+    private IEnumerator Invincibility()
+    {
+        float duration = isRegularlyInvincible ? regularInvincibilityDuration : invincibilityDuration;
+
+        yield return new WaitForSeconds(duration);
+
+        isInvincible = false;
+        isRegularlyInvincible = false;
+    }
+
+    private void HPUp(int hpUp)
     {
         currentHealth += hpUp;
+        ChangeHealthUI(currentHealth);
     }
 
     private IEnumerator FlashPlayer()
     {
-        isInvincible = true;
         float timer = flashDuration;
+        Color originalColor = playerSpriteRenderer.color;
 
         while (timer > 0)
         {
-            playerSpriteRenderer.enabled = !playerSpriteRenderer.enabled;
+            playerSpriteRenderer.color = (playerSpriteRenderer.color == Color.clear) ? originalColor : Color.clear;
             yield return new WaitForSeconds(flashInterval);
             timer -= flashInterval;
         }
 
-        playerSpriteRenderer.enabled = true;
-        isInvincible = false;
+        playerSpriteRenderer.color = originalColor;
     }
+
 
     private void OnDeath()
     {
@@ -239,74 +258,82 @@ public class Player : MonoBehaviour
         {
             TakeDamage(1);
             ChangeHealthUI(currentHealth);
-            isInvincible = true;
-            invincibilityTimer = invincibilityDuration;
+            invincibilityTimer = Mathf.Max(invincibilityDuration, invincibilityTimer);
         }
     }
 
-    private string ChangeHealthUI(int health)
+    private void ChangeHealthUI(int health)
     {
-        string result = $"HP: {health}";
-        return hp.text = result;
+        hp.text = $"HP: {health}";
     }
 
     public void ActivatePowerUp(PowerUpType type)
     {
+        StartCoroutine(DeactivatePowerup(type));
         switch (type)
         {
             case PowerUpType.DiagonalShooting:
-                if (diagonalShootingCoroutine != null)
-                {
-                    StopCoroutine(diagonalShootingCoroutine);
-                }
-                diagonalShootingCoroutine = StartCoroutine(DiagonalShooting());
+                isDiagonalShootingActive = true;
                 break;
-
             case PowerUpType.Forcefield:
-                if (forceFieldCoroutine != null)
-                {
-                    StopCoroutine(forceFieldCoroutine);
-                }
-                forceFieldCoroutine = StartCoroutine(ForceField());
+                isInvincible = true;
+                invincibilityParticleSystem.Play();
                 break;
-
             case PowerUpType.LifeUp:
                 HPUp(1);
-                ChangeHealthUI(currentHealth);
                 break;
         }
+
+        StartCoroutine(DeactivatePowerup(type));
     }
 
 
-    private IEnumerator DiagonalShooting()
+    private IEnumerator DeactivatePowerup(PowerUpType type)
     {
-        float diagonalShootingDuration = 20.0f;
-        isDiagonalShootingActive = true; // Enable diagonal shooting
+        float duration = 0;
 
-        while (diagonalShootingDuration > 0)
+        switch (type)
         {
-            yield return new WaitForSeconds(1);
-            diagonalShootingDuration -= 1;
+            case PowerUpType.DiagonalShooting:
+                duration = 20.0f;
+                break;
+            case PowerUpType.Forcefield:
+                duration = invincibilityDuration;
+                break;
         }
 
-        isDiagonalShootingActive = false; // Disable diagonal shooting after time runs out
+        yield return new WaitForSeconds(duration);
+
+        switch (type)
+        {
+            case PowerUpType.DiagonalShooting:
+                isDiagonalShootingActive = false;
+                break;
+            case PowerUpType.Forcefield:
+                invincibilityParticleSystem.Stop();
+                isInvincible = false;
+                break;
+        }
     }
 
     private IEnumerator ForceField()
     {
-        //TODO: Create a separate function instead of flashplayer. add a better visual cue
-        float forceFieldDuration = 10.0f;
-        StartCoroutine(FlashPlayer()); // Flash the player to indicate invincibility
-        isInvincible = true; // Enable invincibility
+        isInvincible = true;
+        invincibilityParticleSystem.Play();
 
-        while (forceFieldDuration > 0)
+        while (invincibilityTimer > 0)
         {
             yield return new WaitForSeconds(1);
-            forceFieldDuration -= 1;
+            invincibilityTimer -= 1;
         }
 
-        isInvincible = false; // Disable invincibility after time runs out
+        invincibilityParticleSystem.Stop();
+        isInvincible = false;
     }
 
-
+    public void ActivateForceField()
+    {
+        invincibilityTimer = invincibilityDuration;
+        StartCoroutine(ForceField());
+    }
 }

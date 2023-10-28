@@ -58,19 +58,11 @@ public class PowerUpEnemy : Enemy
 
     protected override void OnDestroyed()
     {
-        Debug.Log("OnDestroyed Triggered");  // This will print when OnDestroyed is called
-                                             // Find the player
         GameObject playerObject = GameObject.FindWithTag("Player");
         if (playerObject != null)
         {
             Player player = playerObject.GetComponent<Player>();
-            Debug.Log("Player Found");  // This will print when the player is found
-                                        // Activate the power-up
             player.ActivatePowerUp(powerUpType);
-        }
-        else
-        {
-            Debug.Log("Player not found"); // This will print if the player is not found
         }
     }
 }
