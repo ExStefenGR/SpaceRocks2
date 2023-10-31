@@ -8,16 +8,35 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] private Enemy prefabEnemy;
     [SerializeField] private Enemy powerUpEnemyPrefab;
     [SerializeField] private Transform offset;
-    private readonly int enemiesLimit = 5;
+    private int enemiesLimit = 5;
     private readonly float minYOffset = -4.5f;
     private readonly float maxYOffset = 4.5f;
+
+    //Dynamic Difficulty
+    private readonly float spawnCooldownReduction = 0.25f;
+    private readonly int additionalEnemiesIncrement = 1;  // Add 1 more enemy to limit every 1000 score
+
 
     // Start is called before the first frame update
     private void Start()
     {
+        ScoreManager.Instance.OnScoreChanged += UpdateDifficulty;
         StartCoroutine(SpawnEnemies());
         StartCoroutine(SpawnPowerUpEnemy());
     }
+
+    private void UpdateDifficulty(int newScore)
+    {
+        // Update spawnCooldown every 1000 score
+        int spawnCooldownIncrements = newScore / 1000;
+        spawnCooldown = Mathf.Max(0.5f, 5.0f - (spawnCooldownIncrements * spawnCooldownReduction));
+
+        // Update enemiesLimit every 1000 score
+        int enemiesLimitIncrements = newScore / 1000;
+        enemiesLimit = 5 + (enemiesLimitIncrements * additionalEnemiesIncrement);
+    }
+
+
 
     private IEnumerator SpawnEnemies()
     {
@@ -53,7 +72,7 @@ public class EnemySpawn : MonoBehaviour
             if (IsPlayerActive())
             {
                 powerUpSpawnTimer += Time.deltaTime;
-                
+
                 if (powerUpSpawnTimer >= powerUpSpawnCooldown)
                 {
                     SpawnEnemy(powerUpEnemyPrefab);
