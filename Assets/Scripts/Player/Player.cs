@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
     private readonly float regularInvincibilityDuration = 3.0f;
     private readonly int maxHealth = 5;
 
-    private readonly float flashDuration = 3f;
+    private readonly float flashDuration = 3.0f;
     private readonly float flashInterval = 0.1f;
 
     private Coroutine flashCoroutine;
@@ -23,8 +23,8 @@ public class Player : MonoBehaviour
 
     private float invincibilityTimer = 0.0f;
     private bool isInvincible = false;
-    private float currentInvincibilityTime;
-    private bool isRegularlyInvincible = false;
+    private bool isTemporaryInvincible = false;
+
     private int currentHealth;
 
     [SerializeField] private TextMeshProUGUI hp;
@@ -38,8 +38,6 @@ public class Player : MonoBehaviour
     private readonly float chargeThreshold = 1.0f;
 
     private bool isDiagonalShootingActive = false;
-    private Coroutine diagonalShootingCoroutine;
-    private Coroutine forceFieldCoroutine;
 
 
     public IInteractable Interactable { get; set; }
@@ -84,15 +82,6 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         MovePlayer();
-
-        if (isRegularlyInvincible)
-        {
-            currentInvincibilityTime -= Time.fixedDeltaTime;
-            if (currentInvincibilityTime <= 0)
-            {
-                isRegularlyInvincible = false;
-            }
-        }
     }
 
     // Process player input
@@ -195,7 +184,7 @@ public class Player : MonoBehaviour
 
     private void TakeDamage(int damageAmount)
     {
-        if (isInvincible) return;
+        if (isInvincible || isTemporaryInvincible) return;
 
         currentHealth -= damageAmount;
         ChangeHealthUI(currentHealth);
@@ -208,20 +197,21 @@ public class Player : MonoBehaviour
         {
             if (flashCoroutine != null) StopCoroutine(flashCoroutine);
             flashCoroutine = StartCoroutine(FlashPlayer());
-            isInvincible = true;
-            StartCoroutine(Invincibility());
+            StartCoroutine(TemporaryInvincibility());
         }
     }
 
-    private IEnumerator Invincibility()
+    private IEnumerator TemporaryInvincibility()
     {
-        float duration = isRegularlyInvincible ? regularInvincibilityDuration : invincibilityDuration;
+        isTemporaryInvincible = true;
+
+        float duration = isTemporaryInvincible && isInvincible ? invincibilityDuration : regularInvincibilityDuration;
 
         yield return new WaitForSeconds(duration);
 
-        isInvincible = false;
-        isRegularlyInvincible = false;
+        isTemporaryInvincible = false;
     }
+
 
     private void HPUp(int hpUp)
     {
@@ -254,13 +244,13 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!isInvincible && !collision.gameObject.CompareTag("barrier"))
+        if (!isInvincible && !isTemporaryInvincible && !collision.gameObject.CompareTag("barrier"))
         {
             TakeDamage(1);
-            ChangeHealthUI(currentHealth);
-            invincibilityTimer = Mathf.Max(invincibilityDuration, invincibilityTimer);
+            isTemporaryInvincible = true;
         }
     }
+
 
     private void ChangeHealthUI(int health)
     {

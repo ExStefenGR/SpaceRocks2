@@ -667,8 +667,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -75.002396, y: -0.0022506714, z: 0}
-    m_Extent: {x: 41.006298, y: 40.99775, z: 0}
+    m_Center: {x: -75.0047, y: -0.004301071, z: 0}
+    m_Extent: {x: 41.005104, y: 41.004898, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -1616,10 +1616,6 @@ PrefabInstance:
     - target: {fileID: 1848903133315624342, guid: 92cc3d89684b1f7409753c80844c6634, type: 3}
       propertyPath: enemiesLimit
       value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1848903133315624342, guid: 92cc3d89684b1f7409753c80844c6634, type: 3}
-      propertyPath: powerUpSpawnCooldown
-      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 1848903133315624343, guid: 92cc3d89684b1f7409753c80844c6634, type: 3}
       propertyPath: m_RootOrder
