@@ -58,7 +58,6 @@ public class Player : MonoBehaviour
     {
         if (currentHealth != 0)
         {
-            // Process mobile input if available, else use keyboard input
             if (Application.isMobilePlatform)
             {
                 ProcessMobileInput();
@@ -71,19 +70,16 @@ public class Player : MonoBehaviour
         }
         UpdateAnimation();
     }
-    // Update animation parameters
     private void UpdateAnimation()
     {
         animator.SetFloat("direction", currentMovement.y);
     }
 
-    // FixedUpdate is called at fixed intervals
     private void FixedUpdate()
     {
         MovePlayer();
     }
 
-    // Process player input
     private void ProcessMovementInput()
     {
         moveInput.x = Input.GetAxisRaw("Horizontal");
@@ -118,12 +114,12 @@ public class Player : MonoBehaviour
 
     private void ProcessChargingAndShootingInput()
     {
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetButton("Fire"))
         {
             chargeTime += Time.deltaTime;
             UpdateChargeBar();
         }
-        else if (Input.GetKeyUp(KeyCode.E))
+        else if (Input.GetButtonUp("Fire"))
         {
             if (chargeTime >= chargeThreshold)
             {
