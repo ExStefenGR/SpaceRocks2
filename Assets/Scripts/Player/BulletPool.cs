@@ -6,9 +6,8 @@ public class BulletPool : MonoBehaviour
     [SerializeField] private BulletBehavior bulletPrefab;
     [SerializeField] private BulletBehavior bigBulletPrefab;
     [SerializeField] private int initialPoolSize = 10;
-
-    private List<BulletBehavior> regularBulletPool; // Separate list for regular bullets
-    private List<BulletBehavior> bigBulletPool;     // Separate list for big bullets
+    private List<BulletBehavior> regularBulletPool;
+    private List<BulletBehavior> bigBulletPool;
 
     public static BulletPool Instance { get; private set; }
 
@@ -53,8 +52,6 @@ public class BulletPool : MonoBehaviour
                 return bullet;
             }
         }
-
-        // If no regular bullets are available, expand the pool and return the first regular bullet from the expanded pool
         ExpandPool();
         return regularBulletPool[regularBulletPool.Count - 1];
     }
@@ -68,8 +65,6 @@ public class BulletPool : MonoBehaviour
                 return bullet;
             }
         }
-
-        // If no big bullets are available, expand the pool and return the first big bullet from the expanded pool
         ExpandPool();
         return bigBulletPool[bigBulletPool.Count - 1];
     }

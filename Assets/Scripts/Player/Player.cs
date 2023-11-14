@@ -68,7 +68,6 @@ public class Player : MonoBehaviour
                 ProcessChargingAndShootingInput();
                 ProcessMovementInput();
             }
-
         }
         UpdateAnimation();
     }
@@ -181,7 +180,6 @@ public class Player : MonoBehaviour
         }
     }
 
-
     private void TakeDamage(int damageAmount)
     {
         if (isInvincible || isTemporaryInvincible) return;
@@ -211,7 +209,6 @@ public class Player : MonoBehaviour
 
         isTemporaryInvincible = false;
     }
-
 
     private void HPUp(int hpUp)
     {

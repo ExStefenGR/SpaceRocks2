@@ -15,6 +15,7 @@ public class BulletBehavior : MonoBehaviour
     private void OnEnable()
     {
         rb.velocity = transform.up * speed;
+        pSystem.Emit(20);
     }
 
     private void OnDisable()
@@ -26,7 +27,6 @@ public class BulletBehavior : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("barrier") || collision.gameObject.CompareTag("Enemy"))
         {
-            pSystem.Emit(20);
             gameObject.SetActive(false);
         }
     }
