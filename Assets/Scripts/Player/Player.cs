@@ -39,6 +39,8 @@ public class Player : MonoBehaviour
 
     private bool isDiagonalShootingActive = false;
 
+    private bool isTouchingRightSide = false;
+
 
     public IInteractable Interactable { get; set; }
     private ParticleSystem invincibilityParticleSystem;
@@ -84,31 +86,55 @@ public class Player : MonoBehaviour
     {
         moveInput.x = Input.GetAxisRaw("Horizontal");
         moveInput.y = Input.GetAxisRaw("Vertical");
+
+        if (Application.isMobilePlatform)
+        {
+            ProcessMobileInput();
+        }
     }
 
     // Process mobile input
     private void ProcessMobileInput()
     {
-        // Get the mobile controls instance
-        MobileControls mobileControls = MobileControls.Instance;
-        if (mobileControls == null)
-            return;
-
-        moveInput = mobileControls.IsMoving ? mobileControls.MoveInput : Vector2.zero;
-        if (mobileControls.IsFiring)
+        if (Input.touchCount > 0)
         {
-            // Check if the charge time exceeds the charge threshold
-            if (chargeTime >= chargeThreshold)
+            Touch touch = Input.GetTouch(0);
+
+            // Determine if the touch is on the left or right half of the screen
+            isTouchingRightSide = touch.position.x > Screen.width / 2;
+
+            switch (touch.phase)
             {
-                FireChargedShot();
+                case TouchPhase.Began:
+                case TouchPhase.Moved:
+                    if (!isTouchingRightSide)  // Handle movement on the left side
+                    {
+                        moveInput = new Vector2(touch.deltaPosition.x, touch.deltaPosition.y);
+                    }
+                    break;
+
+                case TouchPhase.Ended:
+                    if (isTouchingRightSide)  // Handle firing on the right side
+                    {
+                        if (chargeTime >= chargeThreshold)
+                        {
+                            FireChargedShot();
+                        }
+                        else
+                        {
+                            FireRegularShot();
+                        }
+                        chargeTime = 0.0f;
+                        UpdateChargeBar();
+                    }
+                    isTouchingRightSide = false;  // Reset flag on touch end
+                    moveInput = Vector2.zero;     // Stop movement after touch release
+                    break;
             }
-            else
-            {
-                FireRegularShot();
-            }
-            // Reset the charge time
-            chargeTime = 0.0f;
-            UpdateChargeBar();
+        }
+        else
+        {
+            moveInput = Vector2.zero;  // No touches, stop movement
         }
     }
 
