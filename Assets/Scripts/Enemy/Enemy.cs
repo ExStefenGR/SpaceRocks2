@@ -40,6 +40,7 @@ public class Enemy : MonoBehaviour
         anim = GetComponent<Animator>();
         randomState = (EnemyState)Random.Range(0, 4); // Increase the range to include a new state
         gameObject.layer = LayerMask.NameToLayer("Enemy");
+        gameObject.tag = "Enemy";
 
         target = GameObject.Find("Player");
         if (target != null)
